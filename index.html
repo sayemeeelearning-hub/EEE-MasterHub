@@ -1,0 +1,3051 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>EEE MasterHub - Engineering Calculators & Courses</title>
+    <!-- SheetJS Library for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <style>
+              :root {
+            /* 🎨 CLEAN LIGHT THEME (EYE-FRIENDLY & STANDARD) */
+            --app-bg: #ffffff;             /* Main Background: Clean White */
+            --app-card-bg: #f8fafc;        /* Card Background: Very Soft Slate */
+            --app-border: #e2e8f0;         /* Soft Gray Border */
+            --app-primary: #1e3a8a;        /* Deep Royal Blue Accent */
+            --text-dark: #0f172a;          /* Deep Dark Text for high readability */
+            --text-muted: #475569;         /* Subdued Slate Text */
+            
+            /* Notification & Unique Accent Colors */
+            --notify-bg: #eff6ff;          /* Light Blue Soft Box */
+            --notify-border: #3b82f6;      /* Blue Accent Border */
+            --highlight-purple: #6b21a8;   /* Royal Purple Accent */
+            --highlight-amber: #b45309;    /* Warm Amber */
+
+            /* Action Buttons & Badges */
+            --btn-red: #dc2626;            /* Red Accent */
+            --btn-green: #15803d;          /* Soft Muted Green */
+            --btn-excel: #166534;          /* Excel Dark Green */
+            --accent-cyan: #0284c7;        /* Soft Cyan/Blue Accent */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: var(--app-bg);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        /* 🔒 LICENSE & LOGIN SCREEN STYLES */
+        #licenseOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .license-card {
+            background-color: #ffffff;
+            border: 1px solid var(--app-border);
+            border-top: 4px solid var(--app-primary);
+            border-radius: 12px;
+            padding: 16px 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 98vh;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .license-card h2, .license-card h3 {
+            font-size: 1.1rem !important;
+            margin-bottom: 4px !important;
+            color: var(--app-primary);
+        }
+
+        .license-card p {
+            font-size: 0.75rem !important;
+            margin-bottom: 6px !important;
+            color: var(--text-dark);
+        }
+
+        .payment-info-box {
+            background: #f8fafc;
+            border: 1px dashed var(--app-primary);
+            border-radius: 8px;
+            padding: 8px 10px !important;
+            margin-bottom: 8px !important;
+            font-size: 0.75rem !important;
+        }
+
+        .payment-method-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            margin-right: 4px;
+        }
+
+        .bkash { background-color: #e2136e; color: #fff; }
+        .nagad { background-color: #f7921e; color: #fff; }
+        .rocket { background-color: #8c3494; color: #fff; }
+
+        .license-input, .license-select {
+            width: 100%;
+            padding: 8px 10px !important;
+            margin-bottom: 6px !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px;
+            border: 1px solid var(--app-border);
+            background-color: #ffffff;
+            color: var(--text-dark);
+        }
+
+        .license-input:focus, .license-select:focus {
+            border-color: var(--app-primary);
+            outline: none;
+        }
+
+        .license-btn {
+            padding: 8px 14px !important;
+            font-size: 0.85rem !important;
+            margin-top: 4px !important;
+            background-color: var(--app-primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .license-btn:hover {
+            opacity: 0.95;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            margin-top: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .license-msg {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        /* SVG Vector Helpers */
+        .svg-icon {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.125em;
+            fill: currentColor;
+            display: inline-block;
+        }
+
+        /* 📱 HEADER */
+        .app-header {
+            width: 100%;
+            background-color: #ffffff;
+            color: var(--app-primary);
+            border-bottom: 1px solid var(--app-border);
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header .brand-title {
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--app-primary);
+        }
+
+        .app-header .brand-title svg {
+            color: var(--app-primary);
+        }
+
+        .app-header .menu-icon {
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: var(--app-primary);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 4px;
+            display: block;
+        }
+
+        /* 🔔 UNIQUE NOTIFICATION BANNER */
+        .notification-banner {
+            background-color: var(--notify-bg);
+            border: 1px solid var(--notify-border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin: 10px 5px 15px 5px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08);
+        }
+
+        /* 🎛️ DASHBOARD GRID CARDS VIEW */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .module-card {
+            background-color: var(--app-card-bg);
+            border: 1px solid var(--app-border);
+            border-radius: 12px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .module-card:hover, .module-card.active {
+            background-color: #ffffff;
+            border-color: var(--app-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(30, 58, 138, 0.1);
+        }
+
+        .module-card .card-icon {
+            font-size: 3rem;
+            color: var(--app-primary);
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .module-card .card-text {
+            color: var(--text-dark);
+            font-weight: 800;
+            font-size: 0.95rem;
+            line-height: 1.3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--app-card-bg);
+            color: var(--text-dark);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: 1px solid var(--app-border);
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: background 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #ffffff;
+            border-color: var(--app-primary);
+        }
+
+        .calc-view { display: none; width: 100%; }
+        .calc-view.active { display: block; }
+
+        .title {
+            color: var(--app-primary);
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .calc-card {
+            background-color: #ffffff;
+            border: 1px solid var(--app-border);
+            border-radius: 10px;
+            padding: 12px 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .card-title {
+            color: var(--app-primary);
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 2px solid var(--app-border);
+            padding-bottom: 6px;
+        }
+
+        .constants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 8px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .field-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .control-panel {
+            background-color: var(--app-card-bg);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--app-border);
+        }
+
+        .control-panel label {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-panel select {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--app-border);
+            background: #ffffff;
+            color: var(--text-dark);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 12px;
+            border: 1px solid var(--app-border);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            white-space: nowrap;
+            table-layout: auto;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            border: 1px solid var(--app-border);
+            text-align: center;
+            font-size: 0.8rem;
+            vertical-align: middle;
+            color: var(--text-dark);
+            word-break: normal;
+        }
+
+        th {
+            background-color: var(--app-card-bg);
+            color: var(--app-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        td.sl, .sl-col {
+            width: 30px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--app-primary);
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .input-tag {
+            background-color: var(--app-primary);
+            color: #ffffff;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        input.table-input, input.tbl-input, .input-control {
+            min-width: 50px;
+            padding: 6px 4px;
+            border: 1px solid var(--app-border);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            outline: none;
+            background-color: #ffffff;
+            text-align: center;
+        }
+
+        input.table-input:focus, input.tbl-input:focus, .input-control:focus {
+            border-color: var(--app-primary);
+        }
+
+        select.table-select, select.tbl-select {
+            min-width: 60px;
+            padding: 6px 4px;
+            border: 1px solid var(--app-border);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            background-color: #ffffff;
+            color: var(--text-dark);
+        }
+
+        .val-readonly {
+            background-color: #f1f5f9;
+            color: var(--app-primary);
+            border-color: var(--app-border);
+        }
+
+        .val-bold { font-weight: 700; color: var(--text-dark); }
+        .unit-text, .unit { font-weight: 700; font-size: 0.75rem; color: var(--text-muted); }
+        .res-highlight { font-weight: 800; color: var(--app-primary); }
+
+        .summary-box {
+            background: #ffffff;
+            border: 1px solid var(--app-primary);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            gap: 5px;
+        }
+
+        .summary-item h4 {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .summary-item .val {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--app-primary);
+        }
+
+        .style-nocolor td { background-color: #ffffff !important; }
+        .style-zebra tbody tr:nth-child(even) td { background-color: #ffffff !important; }
+        .style-zebra tbody tr:nth-child(odd) td { background-color: var(--app-card-bg) !important; }
+
+        .formula-card {
+            background-color: var(--notify-bg);
+            border-left: 4px solid var(--app-primary);
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-top: 1px solid var(--app-border);
+            border-right: 1px solid var(--app-border);
+            border-bottom: 1px solid var(--app-border);
+        }
+
+        .vd-note { font-size: 0.8rem; color: var(--text-dark); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .result-highlight { font-size: 0.95rem; font-weight: bold; color: var(--app-primary); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+
+        .status-pass { background-color: #dcfce7; color: #16a34a; border: 1px solid #22c55e; }
+        .status-fail { background-color: #fee2e2; color: #dc2626; border: 1px solid #ef4444; }
+
+        .notes-section, .standard-note {
+            background-color: var(--app-card-bg);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            border: 1px solid var(--app-border);
+        }
+
+        .button-group, .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 6px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-add { background-color: var(--app-primary); width: 100%; margin-top: 4px; }
+        .btn-excel { background-color: var(--btn-excel); }
+        .btn-green, .btn-print { background-color: var(--btn-green); }
+        .btn-reset { background-color: #64748b; }
+        .btn-del { background-color: var(--btn-red); padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border:none; color:white; cursor:pointer;}
+
+        /* FOOTER BANNER */
+        .app-footer {
+            width: 100%;
+            background-color: var(--app-card-bg);
+            border-top: 1px solid var(--app-border);
+            color: var(--text-dark);
+            padding: 14px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .app-footer a {
+            color: var(--app-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .courses-container {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--app-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            overflow: hidden;
+            color: var(--text-dark);
+            margin-top: 10px;
+        }
+
+        .outer-tab-bar {
+            background-color: #ffffff;
+            display: flex;
+            border-bottom: 2px solid var(--app-primary);
+        }
+
+        .outer-tab-btn {
+            background-color: transparent;
+            color: var(--app-primary);
+            border: none;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .outer-tab-btn.active {
+            background-color: var(--app-card-bg);
+            color: var(--app-primary);
+            border-bottom: 3px solid var(--app-primary);
+        }
+
+        .main-tab-bar {
+            background-color: var(--app-card-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .main-tab-title {
+            color: var(--text-dark);
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            padding: 10px 0;
+            border-bottom: 3px solid var(--app-primary);
+        }
+
+        .user-status {
+            color: var(--app-primary);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sub-tab-bar {
+            display: flex;
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--app-border);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .sub-tab-btn {
+            background-color: transparent;
+            color: var(--text-dark);
+            border: none;
+            outline: none;
+            padding: 14px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .sub-tab-btn.active {
+            color: var(--app-primary);
+            border-bottom: 3px solid var(--app-primary);
+            background-color: var(--notify-bg);
+        }
+
+        .nested-tab-bar {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            background-color: #ffffff;
+            gap: 8px;
+            padding: 15px;
+            border-bottom: 1px solid var(--app-border);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nested-tab-btn {
+            background-color: var(--app-card-bg);
+            color: var(--text-muted);
+            border: 1px solid var(--app-border);
+            border-radius: 6px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .nested-tab-btn.active {
+            background-color: var(--app-primary);
+            color: #ffffff;
+            border-color: var(--app-primary);
+        }
+
+        .tab-content, .nested-tab-content, .ebook-nested-content {
+            display: none;
+            padding: 15px;
+        }
+
+        .tab-content.active, .nested-tab-content.active, .ebook-nested-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--app-border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--app-primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h4 {
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1.4;
+        }
+
+        .btn-action {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 16px;
+            background-color: var(--app-primary);
+            color: #ffffff;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            margin: 0 auto;
+            padding: 10px;
+            border-radius: 0px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-dark);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--app-border);
+        }
+
+        .close-btn {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .close-btn:hover { color: var(--app-primary); }
+
+        .embedded-viewer-container {
+            width: 100%;
+            margin-top: 10px;
+            background: #ffffff;
+            border: 1px solid var(--app-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            color: var(--text-dark);
+        }
+
+        .embedded-viewer-header {
+            background-color: var(--app-card-bg);
+            color: var(--app-primary);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--app-border);
+        }
+
+        .embedded-viewer-header h3 {
+            font-size: 14px;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .embedded-close-btn {
+            background: var(--btn-red);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .embedded-viewer-frame {
+            width: 100%;
+            height: 80vh;
+            border: none;
+        }
+                /* 💻 DESKTOP AND LAPTOP VIEW STYLES (LARGER TEXTS) */
+        @media screen and (min-width: 1024px) {
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 15px;
+            }
+
+            .app-header .brand-title {
+                font-size: 1.5rem;
+            }
+
+            .app-header .brand-title span {
+                font-size: 1.1rem !important;
+            }
+
+            .app-header .menu-icon {
+                font-size: 1.8rem;
+            }
+
+            #dashboard_view div[style*="font-size: 0.85rem"],
+            #dashboard_view div[style*="font-size: .5cm"] {
+                font-size: 1.1rem !important;
+                line-height: 1.6 !important;
+            }
+
+            .module-card .card-text {
+                font-size: 1.25rem;
+            }
+
+            .module-card .card-icon {
+                font-size: 4rem;
+            }
+
+            .title {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+
+            .field-group label, .control-panel label {
+                font-size: 1rem;
+            }
+
+            th {
+                font-size: 0.95rem;
+                padding: 10px 8px;
+            }
+
+            td {
+                font-size: 1rem;
+                padding: 10px 8px;
+            }
+
+            input.table-input, input.tbl-input, .input-control, select.table-select, select.tbl-select, .control-panel select {
+                font-size: 1rem;
+                padding: 8px 10px;
+            }
+
+            .unit-text, .unit {
+                font-size: 0.95rem;
+            }
+
+            .summary-item h4 {
+                font-size: 0.9rem;
+            }
+
+            .summary-item .val {
+                font-size: 1.25rem;
+            }
+
+            .btn, .btn-back, .license-btn {
+                font-size: 1.05rem;
+                padding: 12px 18px;
+            }
+
+            .outer-tab-btn {
+                font-size: 22px;
+            }
+
+            .main-tab-title {
+                font-size: 22px;
+            }
+
+            .user-status {
+                font-size: 16px;
+            }
+
+            .sub-tab-btn {
+                font-size: 18px;
+                padding: 16px 28px;
+            }
+
+            .nested-tab-btn {
+                font-size: 15px;
+                padding: 10px 18px;
+            }
+
+            .card h4 {
+                font-size: 16px;
+            }
+
+            .btn-action {
+                font-size: 15px;
+                padding: 12px 20px;
+            }
+
+            .vd-note, .result-highlight, .notes-section, .standard-note {
+                font-size: 1rem;
+            }
+
+            .app-footer {
+                font-size: 1.1rem;
+                padding: 15px;
+            }
+        }
+  .zoom-live-section {
+    background-color: #3b4859;
+    padding: 30px 20px;
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    max-width: 400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .zoom-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 26px;
+    font-weight: bold;
+  }
+
+  .zoom-header p {
+    margin: 0 0 24px 0;
+    color: #cbd5e1;
+    font-size: 15px;
+  }
+
+  .zoom-card {
+    background-color: #0d1527;
+    border-radius: 14px;
+    padding: 28px 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 12px;
+  }
+
+  .red-dot {
+    width: 14px;
+    height: 14px;
+    background-color: #e11d48;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px #e11d48;
+  }
+
+  .class-title {
+    color: #fef08a;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+  }
+
+  .info-text {
+    font-size: 16px;
+    color: #ffffff;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .passcode-text {
+    color: #22c55e;
+    font-weight: bold;
+  }
+
+  .zoom-join-btn {
+    display: block;
+    background-color: #f3d6a5;
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-top: 22px;
+    line-height: 1.3;
+    transition: background-color 0.2s ease;
+  }
+
+  .zoom-join-btn:hover {
+    background-color: #e5c48f;
+  }
+
+  .zoom-join-btn.disabled {
+    background-color: #64748b;
+    color: #cbd5e1;
+    pointer-events: none;
+  }
+
+
+        @media print {
+            body { background-color: #ffffff !important; color: #000000 !important; }
+            #licenseOverlay, .app-header, .btn-back, .btn-group, .button-group, .btn-add, .btn-del-col, .control-panel { display: none !important; }
+            .calc-view.active { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .table-wrapper { overflow: visible !important; border: none !important; }
+            table { width: 100% !important; border: 1px solid #000 !important; color: #000 !important; }
+            th, td { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
+            input, select { border: none !important; background: transparent !important; color: #000 !important; text-align: center; }
+            .summary-box, .formula-card, .notes-section { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
+        }
+
+        @media screen and (max-width: 600px) {
+            .container { padding: 0px; }
+            .dashboard-grid { grid-template-columns: 1fr; gap: 10px; width: 100%; padding: 5px; }
+            .card-grid { grid-template-columns: 1fr; }
+            .modal-content { width: 100%; height: 100%; margin: 0; }
+            .embedded-viewer-frame { height: 85vh; }
+            .calc-card { border-radius: 0; border-left: none; border-right: none; }
+
+            #voltage_drop_calc .table-wrapper, 
+            #substation_calc .table-wrapper {
+                overflow-x: hidden;
+            }
+
+            #voltage_drop_calc table, 
+            #substation_calc table {
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            #voltage_drop_calc th, #voltage_drop_calc td,
+            #substation_calc th, #substation_calc td {
+                padding: 6px 2px;
+                font-size: 0.72rem;
+                white-space: normal;
+                word-wrap: break-word;
+            }
+
+            #voltage_drop_calc input.input-control, 
+            #voltage_drop_calc select.input-control,
+            #substation_calc input.table-input, 
+            #substation_calc select.table-select {
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+                font-size: 0.75rem;
+                padding: 4px 1px;
+            }
+
+            #voltage_drop_calc .input-container,
+            #substation_calc .input-container {
+                width: 100%;
+            }
+        }
+        .live-classes-section {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.spinner {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  padding: 20px;
+}
+
+.class-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.class-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge-live { background: #ff4d4f; color: #fff; }
+.badge-upcoming { background: #1890ff; color: #fff; }
+.badge-completed { background: #8c8c8c; color: #fff; }
+
+.zoom-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #2D8CFF;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.zoom-btn.disabled {
+  background: #ccc;
+  pointer-events: none;
+}
+    </style>
+</head>
+<body>
+
+<!-- 🔒 PAYMENT & LICENSE OVERLAY -->
+<div id="licenseOverlay">
+    <div class="license-card">
+        
+        <!-- ১. টাইটেলের ফন্ট সাইজ পিক্সেল/রেম এ ফিক্সড করা হয়েছে -->
+        <p style="margin-top: 4px; margin-bottom: 6px; color: #ffd104; font-size: 1.5rem !important; font-weight: bold; line-height: normal;">EEE MasterHub</p>
+        
+        <!-- Payment Request Section -->
+        <div id="paymentRequestSection">
+            
+            <!-- ২. সাবটাইটেলের ফন্ট সাইজ ঠিক করা হয়েছে -->
+            <p style="margin-top: 4px; margin-bottom: 2px; color: #96f006; font-size: 0.8rem !important; font-weight: bold; line-height: normal;">💳পেমেন্ট সম্পূর্ণ করে রিকোয়েস্ট পাঠান।</p>
+            <p style="margin-top: 3px; margin-bottom: 2px; color: #05e7fc; font-size: 0.8rem !important; font-weight: bold; line-height: normal;">ℹ️সহযোগিতার জন্য হোয়াটসঅ্যাপে মেসেজ দিন।</p>
+            
+            <!-- ৩. WhatsApp বাটন -->
+            <a href="https://wa.me/8801714654448" target="_blank" rel="noopener noreferrer" style="background-color: #293754; color: rgb(3, 180, 62); padding: 4px 10px; border-radius: 5px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.9rem;">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="fill: #25D366; width: 20px; height: 20px;">
+           <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 16.39c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.188 8.188 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.183 8.183 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.18-.54.06s-1.05-.39-2-1.23c-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.44.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.44s-.56-1.36-.77-1.86c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.18-.47-.3z"/></svg>
+            WhatsApp </a>
+            <br>
+            
+            <!-- ৪. সাবস্ক্রিপশন ফি বাটন -->
+            <a target="_blank" rel="noopener noreferrer" style="background-color: #374460; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; display: inline-block; text-align: center; margin-top: 2px; margin-bottom: 6px; font-size: 0.85rem;">
+                সাবস্ক্রিপশন ফিঃ১৯৯৯/=</a>
+                
+            <div class="payment-info-box">
+                <p><span class="payment-method-badge bkash">bKash</span><span class="payment-method-badge nagad">Nagad</span><span class="payment-method-badge rocket">Rocket</span> </p>
+                <p> <strong>01729847380</strong> (Send Money)</p>
+                <p style="margin-top: 5px; color: #f88d02; font-size: 0.75rem;">(পেমেন্ট শেষে ফর্মটি পূরণ করলেই লাইসেন্স কী পৌঁছে যাবে আপনার ইমেইলে।)</p>
+            </div>
+
+            <form id="paymentForm" onsubmit="submitPaymentRequest(event)">
+                <input type="text" id="payName" class="license-input" placeholder="আপনার নাম (Full Name)" required>
+                <input type="email" id="payEmail" class="license-input" placeholder="আপনার ইমেইল (Email)" required>
+                <input type="tel" id="payPhone" class="license-input" placeholder="আপনার মোবাইল নম্বর" required>
+                
+                <select id="payMethod" class="license-select" required>
+                    <option value="" disabled selected>পেমেন্ট মেথড সিলেক্ট করুন</option>
+                    <option value="bKash">bKash (বিকাশ)</option>
+                    <option value="Nagad">Nagad (নগদ)</option>
+                    <option value="Rocket">Rocket (রকেট)</option>
+                </select>
+                <input type="text" id="payTrxId" class="license-input" placeholder="TrxID (ট্রানজেকশন আইডি)" required>
+                <button type="submit" class="license-btn" id="paySubmitBtn">Confirm</button>
+            </form>
+            <button class="toggle-btn" onclick="toggleAuthMode('login')" style="background: none; border: none; font-size: 12px; color: #87a0ed; cursor: pointer; text-decoration: underline; margin-top: 6px;">
+    লাইসেন্স কী আছে? থাকলে একটিভেট করুন।</button>
+        </div>
+        <!-- License Activation Section (Hidden by Default) -->
+        <div id="licenseActivateSection" style="display: none;">
+            <p>আপনার ইমেইলে প্রাপ্ত লাইসেন্স কী দিয়ে অ্যাপটি অ্যাক্টিভেট করুন।</p>
+            <input type="email" id="loginEmailInput" class="license-input" placeholder="আপনার ইমেইল (Email)" required>
+            <input type="password" id="loginPassInput" class="license-input" placeholder="আপনার পাসওয়ার্ড (Password)" required>
+            <input type="text" id="licenseKeyInput" class="license-input" placeholder="লাইসেন্স কী (XXXX-XXXX-XXXX)" style="text-transform:uppercase;" required>
+            
+            <button class="license-btn" id="activateBtn" onclick="activateLicense()">লগইন ও অ্যাক্টিভেট</button>
+            
+            <button class="toggle-btn" onclick="toggleAuthMode('payment')">পেমেন্ট করেননি? পেমেন্ট করুন</button>
+        </div>
+
+        <div id="licenseMsg" class="license-msg"></div>
+    </div>
+</div>
+
+<!-- 📱 HEADER BAR -->
+<div class="app-header">
+    <div class="brand-title">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+        <span>EEE MasterHub APP</span>
+    </div>
+    <div class="menu-icon">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    </div>
+</div>
+
+<div class="container" id="mainContainer">
+
+    <!-- 🎛️ DASHBOARD MENU -->
+    <div id="dashboard_view">
+        <!-- UNIQUE NOTIFICATION STYLE FOR COURSE PROMOTION -->
+        <div class="notification-banner">
+            <div style="font-size: 0.8rem; color: var(--text-dark); font-weight: 600; line-height: 1.5;">
+                আপনি কি Electrical/Electronics/Power Engineer?<br>
+                তাহলে একটি গুরুত্বপূর্ণ সত্য জেনে নিন—<span style="color: var(--highlight-purple); font-weight: 700;">"ডিগ্রি আপনাকে পরিচয় দেয়, আর Practical Skill আপনাকে চাকরি এনে দেয়।"</span>
+            </div>
+            <div style="font-size: 0.95rem; color: var(--app-primary); font-weight: 800; margin-top: 6px;">
+                AutoCAD-Based Electrical Design Course Bundle (Zero to Advance)
+            </div>
+            <div style="font-size: 0.75rem; color: var(--highlight-amber); font-weight: 700; margin-top: 2px;">BNBC, NFPA, NIRAPON & RSC Standard অনুযায়ী</div>
+            <div style="font-size: 0.75rem; color: var(--text-dark); font-weight: 700; margin-top: 6px;">এই কোর্সে শিখানো হবে—</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-align: left; max-width: 600px; margin: 6px auto; line-height: 1.5;">
+                1. Sub-Station Design (Code Based) 2. Lightning Protection System (LPS) Design & BOQ-BNBC 2020 ও NFPA 780 Standard 3. AutoCAD 2D & Isometric 4. Electrical SLD for RSC Audit 5. Electrical Safety Audit 6. BNBC 2020 Electrical Design Code Rules 7. Electrical Panel Board Design 8. Electrical Test Report Preparation 9. Checklist & Register Maintenance
+            </div>
+            <div style="font-size: 0.8rem; color: var(--app-primary); font-weight: 700; margin-top: 6px;">মনে রাখবেন— “আজকের স্কিলই আপনার আগামী দিনের পজিশন নির্ধারণ করবে।”</div>
+            <div style="font-size: 0.85rem; color: var(--btn-green); font-weight: 800; margin-top: 4px;">বিস্তারিত জানতে WhatsApp বা কল করুন: 01714654448</div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="module-card" onclick="openModule('courses_view')">
+                <div class="card-icon">🎓</div>
+                <div class="card-text">Courses</div>
+            </div>
+
+            <div class="module-card" onclick="openModule('bbt_voltage_drop_calc')">
+                <div class="card-icon">
+                    <svg class="svg-icon" style="width:1.2em; height:1.2em;" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                </div>
+                <div class="card-text">BBT VOLTAGE DROP<br>CALCULATOR</div>
+            </div>
+
+            <div class="module-card" onclick="openModule('voltage_drop_calc')">
+                <div class="card-icon">
+                    <svg class="svg-icon" style="width:1.2em; height:1.2em;" viewBox="0 0 24 24"><path d="M16 7.31V3h-2v4.31C13.01 7.69 12 8.71 12 10v4c0 1.1.9 2 2 2h.31V21h1.38v-5H16c1.1 0 2-.9 2-2v-4c0-1.29-1.01-2.31-2-2.69zM10 7.31V3H8v4.31C7.01 7.69 6 8.71 6 10v4c0 1.1.9 2 2 2h.31V21h1.38v-5H10c1.1 0 2-.9 2-2v-4c0-1.29-1.01-2.31-2-2.69z"/></svg>
+                </div>
+                <div class="card-text">CABLE VOLTAGE <br>DROP CALCULATOR</div>
+            </div>
+
+            <div class="module-card" onclick="openModule('substation_calc')">
+                <div class="card-icon">
+                    <svg class="svg-icon" style="width:1.2em; height:1.2em;" viewBox="0 0 24 24"><path d="M22 22H2V10l7-5v2L4 10.5V20h16v-9.5l-5-3.57V5l7 5v12zM10 20h4v-5h-4v5z"/></svg>
+                </div>
+                <div class="card-text">SUBSTATION EQUIPMENT<br>SELECTION</div>
+            </div>
+        </div>
+    </div>
+   <!-- ==================== 0. COURSES MODULE VIEW ==================== -->
+    <div id="courses_view" class="calc-view">
+        <button class="btn-back" onclick="showDashboard()">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+        </button>
+
+        <div class="courses-container">
+            <div class="outer-tab-bar">
+                <button class="outer-tab-btn active">
+                    <span style="color: #ffcc00; font-size: 22px;">⚡</span> SAYEM EEE LEARNING
+                </button>
+            </div>
+
+            <div id="bbt-tab" class="outer-tab-content active">
+                <div class="main-tab-bar">
+                    <div class="main-tab-title">AutoCAD-Based Electrical Design Course Bundle (Zero to Advance)</div>
+                    <div id="userStatus" class="user-status">Guest User</div>
+                </div>
+
+                <div class="sub-tab-bar">
+                    <button class="sub-tab-btn" onclick="openSubTab(event, 'Live-Class')">Live Class</button>
+                    <button class="sub-tab-btn active" onclick="openSubTab(event, 'ebook')">E-Book & Cad File</button>
+                    <button class="sub-tab-btn" onclick="openSubTab(event, 'record-class')">Record Class</button>
+                    <button class="sub-tab-btn" onclick="openSubTab(event, 'Engineering-Code-Content')">Engineering Code Content</button>
+    
+                </div>
+
+                <!-- In-Page Embedded Reader Display Box -->
+                <div id="embeddedViewerContainer" class="embedded-viewer-container" style="display: none;">
+                    <div class="embedded-viewer-header">
+                        <h3 id="embeddedViewerTitle">Content Viewer</h3>
+                        <button class="embedded-close-btn" onclick="closeInPageViewer()">Close / বন্ধ করুন ✖</button>
+                    </div>
+                    <iframe id="embeddedViewerFrame" class="embedded-viewer-frame" allow="fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" sandbox="allow-scripts allow-same-origin allow-popups" src=""></iframe>
+                </div>
+
+                <!-- 1. E-Book Content -->
+                <div id="ebook" class="tab-content active">
+                    <div class="nested-tab-bar">
+                        <button class="nested-tab-btn active" onclick="openEbookNestedTab(event, 'eb-1')">1. Sub-Station Design</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-2')">2. Lightning Protection System (LPS)</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-3')">3. AutoCAD 2D & Isometric</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-4')">4. Electrical SLD (RSC Audit)</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-5')">5. Electrical Safety Audit</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-6')">6. BNBC 2020 Electrical Code Rules</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-7')">7. Panel Board Design</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-8')">8. Electrical Test Report Preparation</button>
+                        <button class="nested-tab-btn" onclick="openEbookNestedTab(event, 'eb-9')">9. Checklist & Register</button>
+                    </div>
+
+                    <div id="eb-1" class="ebook-nested-content active">
+                        <h2>Sub-Station Design (Code Based)- E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Sub-Station বিষয়ক সকল E-Book & Cad Fileএখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>SUB-STATION Basic Fundamentals-Class-01 & 02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1tk_fGm0sXgCnggXVnDiZRHNCTMmFGGMt/view?usp=sharing', 'SUBSTATION Basic Fundamentals-Class-01')">Read</button>
+                            </div>
+                            <div class="card">
+                                <h4>SUB-STATION Equipment Selection-Class-03</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1NlL3NxaAQm2SI7pD-yymGMhpsPMkQjMs/view?usp=sharing', 'SUB-STATION Equipment Selection-Class-03')">Read</button>
+                            </div>
+                            <div class="card">
+                                <h4>LT CABLE & CIRCUIT Breaker Selection-Class-04 & 05</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1g8YYvDKHWYPAUmwqcAH8o_sfUr30z_nv/view?usp=sharing', 'LT CABLE & CIRCUIT Breaker Selection-Class-04 & 05')">Read</button>
+                            </div>
+                            <div class="card">
+                                <h4>Earthing System-Class-06</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1EhWxjCZORhHh2ycvkdnKB6q5ILZi2C4t/view?usp=sharing', 'Earthing System-Class-06')">Read</button>
+                             </div>
+                            <div class="card">
+                               <h4>Earthing System(CAD FILE)</h4>
+                               <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1qwtID8zOX0RpDmndTk6B8kJHx-8enMbS" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               </div>
+                  
+                        </div>
+                    </div>
+
+                    <div id="eb-2" class="ebook-nested-content">
+                        <h2>Lightning Protection System (LPS) Design & BOQ-BNBC 2020 ও NFPA 780 Standard- E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">LPS বিষয়ক সকল E-Book & Cad Fileএখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>LPS DESIGN-Theory.pdf</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1G1-Pevni98tqv0Bof6dsXrSbQH416A57/preview', 'LPS DESIGN-Theory.pdf')">Read</button>
+                             </div>
+                          
+                            <div class="card">
+                                <h4>LPS FINAL ASSIGNMENTS-01(CAD FILE)</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                                <a href="https://drive.google.com/uc?export=download&id=1C9DzF8_MnTdzCJ6MY4HNqDzfQ1vHMdwX" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                                </div>
+
+                            <div class="card">
+                               <h4>LPS FINAL ASSIGNMENTS-02(CAD FILE)</h4>
+                               <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                                <a href="https://drive.google.com/uc?export=download&id=1C9DzF8_MnTdzCJ6MY4HNqDzfQ1vHMdwX" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               </div>
+
+                            <div class="card">
+                               <h4>LPS BOQ (Excel FILE)</h4>
+                               <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1NwUZ_3FIPY9aUz-Q6g7QtZ1_eRw1XllB" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               </div>
+                        </div>
+                    </div>
+
+                    <div id="eb-3" class="ebook-nested-content">
+                        <h2>AutoCAD 2D & Isometric- E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">AutoCAD বিষয়ক সকল E-Book & Cad File এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                               <h4>AutoCAD Hand Note(PDF FILE)</h4>
+                               <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1t64iaRFn2ePnZjrZos73MbFJd4lN7rYE" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               </div>
+                            <div class="card">
+                                <h4>AutoCAD Class-01-Home Wpork-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1eLewGPLtIZda4VrL6xVoOoIEJ88B9U8p" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                            </div>
+                            <div class="card">
+                                <h4>AutoCAD Class-2,3,4,5.-Home Wpork-02</h4>
+                               <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1taaezhfJCkCsAenTDLS68--Xiins8tfD" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                    
+                            </div>
+                            <div class="card">
+                                <h4>AutoCAD Class-6,7,8,9,10.-Home Work-03</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=17GaC9R2j-7FCYjmZmPs0RMVpGfTc47nU" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                    
+                            </div>
+                        
+                            <div class="card">
+                               <h4>AutoCAD ASSIGNMENTS(CAD FILE)</h4>
+                               <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=আপনার_নতুন_ফাইল_আইডি" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                    
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="eb-4" class="ebook-nested-content">
+                        <h2>Electrical SLD for RSC Audit- E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Electrical SLD বিষয়ক সকল E-Book & Cad File এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical SLD-Homework-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1E1ByjSQ-Xgo9NcEmbHKKQR5F7HPckR8L/preview', 'SUBSTATION Basic Fundamentals-Class-01')">Read</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical SLD-Homework-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION EQUIPMENT SELECTION-Class-02')">Read</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical SLD Assignment-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1C7Q9wYSW-ubksyeOydyR0slDCJgTTSV-" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical SLD Assignment-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1ZgbDn7to9Zt6oflQ4-mcWpQ4XpYO1d_f" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="eb-5" class="ebook-nested-content">
+                        <h2>Electrical Safety Audit - E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Electrical Safety Audit বিষয়ক সকল E-Books এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical Safety Audit-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1IHHyE5DA-QticBKQ_FkC6EofgwOoHANg/view?usp=sharing', 'Electrical Safety Audit-Class-01')">Read</button>
+                          
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="eb-6" class="ebook-nested-content">
+                        <h2>BNBC 2020 Electrical Design Code Rules - E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">BNBC 2020 Code Rules বিষয়ক সকল E-Book & Cad File এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>BNBC 2020 Electrical Code Rules-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1WVbNy0QpYjr50CFl1ZNd_8KXzBXCFI1v/view?usp=sharing', 'BNBC 2020 Electrical Code Rules-Class-01')">Read</button>
+                            </div>
+                            <div class="card">
+                                <h4>BNBC 2020 Electrical Code Rules-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1G1-Pevni98tqv0Bof6dsXrSbQH416A57/preview', 'BNBC 2020 Electrical Code Rules-Class-02')">Read</button>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div id="eb-7" class="ebook-nested-content">
+                        <h2>Electrical Panel Board Design - E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Electrical Panel Board বিষয়ক সকল E-Book & Cad File এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical Panel Board Design-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
+                               <a href="https://drive.google.com/uc?export=download&id=1ykl9Ib973hk6x9lj2OwpYGiTYmAZ0SrE" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                            
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="eb-8" class="ebook-nested-content">
+                        <h2>Electrical Test Report Preparation - E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Test Report Preparation বিষয়ক সকল E-Book & Cad File এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical Test Report Preparation-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1-ZKZe8qFAy8SSVcy7u3IHDB9EEcIVduA/view?usp=sharing', 'Electrical Test Report Preparation-Class-01')">Read</button>
+                                
+                            </div>
+                                <div class="card">
+                                <h4>Electrical Test Report Preparation-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1dqRU0xAGmkMzB4MoTyPKjs7sM-EBrQbc/view?usp=sharing', 'Electrical Test Report Preparation-Class-01')">Read</button>
+                        
+                            </div>
+                        </div>
+                    </div>
+                 
+                    <div id="eb-9" class="ebook-nested-content">
+                        <h2>Checklist & Register Maintenance - E-Book & Cad File</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Checklist & Register বিষয়ক সকল E-Book & Cad File এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Checklist & Register Maintenance-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION Design final-Class-04')">Read</button>
+                            </div>
+                            <div class="card">
+                                <h4>Checklist & Register Maintenance-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'EARTHING SYSTEM DESIGN-Class-05')">Read</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Record Class Content -->
+                <div id="record-class" class="tab-content">
+                    <div class="nested-tab-bar">
+                        <button class="nested-tab-btn active" onclick="openNestedTab(event, 'sub-1')">1. Sub-Station Design</button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-2')">2. Lightning Protection System (LPS)</button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-3')">3. AutoCAD 2D & Isometric</button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-4')">4. Electrical SLD (RSC Audit)</button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-5')">5. Electrical Safety Audit</button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-6')">6. BNBC 2020 Electrical Design Code Rules </button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-7')">7. Panel Board Design</button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-8')">8. Electrical Test Report Preparation </button>
+                        <button class="nested-tab-btn" onclick="openNestedTab(event, 'sub-9')">9. Checklist & Register</button>
+                    </div>
+
+                    <div id="sub-1" class="nested-tab-content active">
+                        <h2>Sub-Station Design (Code Based)- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Sub-Station বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>SUB-STATION Basic Fundamentals-Part-01-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1E1ByjSQ-Xgo9NcEmbHKKQR5F7HPckR8L/view?usp=sharing', 'SUBSTATION Basic Fundamentals-Class-01')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>SUB-STATION Basic Fundamentals-Part-02-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1wrAGtYRLazPEoEzbZCi5qqp7LL6zyps9/view?usp=sharing', 'SUB-STATION Basic Fundamentals-Part-01-Class-02')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>SUB-STATION Equipment Selection-Class-03</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1eacS5SIwlI8BG3sXwDKbdkWjzcuySbbH/view?usp=sharing', 'SUB-STATION Equipment Selection-Class-03')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>LT CABLE & CIRCUIT reaker Selection-Part-01-Class-04</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1QM6DuW0n5d3SXBX0avQCLFdICok35n47/view?usp=sharing', 'LT CABLE & CIRCUIT reaker Selection-Part-01-Class-04')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>LT CABLE & CIRCUIT reaker Selection-Part-02-Class-05</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1KNN4fLLtmKY5ZNhlTUTOFYLK42K0YwsA/view?usp=sharing', 'LT CABLE & CIRCUIT reaker Selection-Part-02-Class-05')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Earthing System-Class-06</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1CDzMIn4c3nXUN7ENrO1zpI2Ao9_kCiIa/view?usp=sharing', 'Earthing System-Class-06')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>SUB-STATION Support-Class-07</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'Assignment-Class-00')">view</button>
+                        
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-2" class="nested-tab-content">
+                        <h2>Lightning Protection System (LPS) Design & BOQ-BNBC 2020 ও NFPA 780 Standard- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Lightning Protection System বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>LPS DESIGN Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1rYd83jTsOl5tUgYo7s271ciGeVStbDp9/view?usp=sharing', 'LPS DESIGN Class-01')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>LPS DESIGN Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1wtSGXHBVchvss2PsZMyRbX-_Ad-2ebC9/view?usp=sharing', 'LPS DESIGN Class-02')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>LPS DESIGN Class-03</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/193poJ3QtWBZgfGAy4kj1zZOFS8F2xyrd/view?usp=sharing', 'LPS DESIGN Class-03')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>LPS DESIGN Class-04</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1P959ZVQMHZJhZtaec2TSSdxaqpldKqtf/view?usp=sharing', 'LPS DESIGN Class-04')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>LPS DESIGN Final Class-05</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1-gLTY8MyUo-yUf61W6VqqqRps6qL6gio/view?usp=sharing', 'LPS DESIGN Final Class-05')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>BOQ For LPS Class-06</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1y9VHnf3aifquEuJQIilXJpnw5AsUBy3X/view?usp=sharing', 'BOQ For LPS Class-06')">view</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-3" class="nested-tab-content">
+                        <h2>AutoCAD 2D & Isometric- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">AutoCAD 2D & Isometric বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>AutoCAD Class-1.</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1bgdfIRnRHC4miyAV1ABJolPyBJ7z20xv/view?usp=sharing', 'AutoCAD Class-1')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>AutoCAD Class-2,3,4,5.</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1E3ohIkMr0NSkfrHY01JfX_hed1ueVzIP/view?usp=sharing', 'AutoCAD Class-2,3,4,5.')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>AutoCAD Class-6,7,8,9,10.</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1OxgCAeGEHRC9Liu8MsXBxqrC2pldMlGC/view?usp=sharing', 'AutoCAD Class-6,7,8,9,10.')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>AutoCAD Final Class-11.</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1_CyMZKQqIhx5CN2K3GdXM-P_OODH589m/view?usp=sharing', 'SUBSTATION Design final-Class-04')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>AutoCAD Support Class-12.</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'EARTHING SYSTEM DESIGN-Class-05')">view</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-4" class="nested-tab-content">
+                        <h2>Electrical SLD for RSC Audit- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Electrical SLD বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical SLD-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1E1ByjSQ-Xgo9NcEmbHKKQR5F7HPckR8L/preview', 'SUBSTATION Basic Fundamentals-Class-01')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical SLD-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION EQUIPMENT SELECTION-Class-02')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical SLD-Class-03</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'LT CABLE & CIRCUIT BREAKER SELECTION-Class-03')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical SLD Assignment-final-Class-04</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION Design final-Class-04')">view</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-5" class="nested-tab-content">
+                        <h2>Electrical Safety Audit- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Electrical Safety Audit বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical Safety Audit-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1G1-Pevni98tqv0Bof6dsXrSbQH416A57/preview', 'SUBSTATION Basic Fundamentals-Class-01')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical Safety Audit-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION EQUIPMENT SELECTION-Class-02')">view</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-6" class="nested-tab-content">
+                        <h2>BNBC 2020 Electrical Design Code Rules- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">BNBC 2020 Code Rules বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>BNBC 2020 Electrical Design Code Rules-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1G1-Pevni98tqv0Bof6dsXrSbQH416A57/preview', 'SUBSTATION Basic Fundamentals-Class-01')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>BNBC 2020 Electrical Design Code Rules-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION EQUIPMENT SELECTION-Class-02')">view</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-7" class="nested-tab-content">
+                        <h2>Electrical Panel Board Design- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Electrical Panel Board Design বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical Panel Board Design-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION Design final-Class-04')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical Panel Board Design-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'EARTHING SYSTEM DESIGN-Class-05')">view</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-8" class="nested-tab-content">
+                        <h2>Electrical Test Report Preparation- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Test Report Preparation বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Electrical Test Report Preparation-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://drive.google.com/file/d/1G1-Pevni98tqv0Bof6dsXrSbQH416A57/preview', 'SUBSTATION Basic Fundamentals-Class-01')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Electrical Test Report Preparation-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION EQUIPMENT SELECTION-Class-02')">view</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-9" class="nested-tab-content">
+                        <h2>Checklist & Register- Record Class</h2>
+                        <p style="color: #64748b; margin-top: 5px;">Checklist & Register বিষয়ক সকল Record Class এখানে পাবেন।</p>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Checklist & Register Maintenance-Class-01</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'SUBSTATION Design final-Class-04')">view</button>
+                            </div>
+                            <div class="card">
+                                <h4>Checklist & Register Maintenance-Class-02</h4>
+                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                                <button class="btn-action" onclick="openInPageViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'EARTHING SYSTEM DESIGN-Class-05')">view</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<!-- Engineering Code Content -->
+<div id="Engineering-Code-Content" class="tab-content">
+    <!-- Tab Menu Buttons -->
+    <div class="nested-tab-bar">
+        <button class="nested-tab-btn active" onclick="openNestedTab(event, 'ecc-1')">1. RSC</button>
+        <button class="nested-tab-btn" onclick="openNestedTab(event, 'ecc-2')">2. Nirapon</button>
+        <button class="nested-tab-btn" onclick="openNestedTab(event, 'ecc-3')">3. BNBC</button>   
+        <button class="nested-tab-btn" onclick="openNestedTab(event, 'ecc-4')">4. NFPA</button> <!-- নতুন যোগ করা ট্যাব -->
+    </div>
+
+    <!-- Tab 1: RSC -->
+    <div id="ecc-1" class="nested-tab-content active">
+        <h2>RSC Standard</h2>
+        <p style="color: #64748b; margin-top: 5px;">RSC বিষয়ক সকল Content এখানে পাবেন।</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>RSC Standard Manual</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=1yJ6-dbEZ_Zh1nlrySBkYA6saxqRWJe-E" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                 </div>
+                <div class="card">
+                <h4>RSC (Breaker & Cable Combination).</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=1EEvuidLaWMXEMVggZvjWJjv05H_Bnehw" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Tab 2: Nirapon -->
+    <div id="ecc-2" class="nested-tab-content" style="display: none;">
+        <h2>Nirapon Guidelines</h2>
+        <p style="color: #64748b; margin-top: 5px;">Nirapon সংক্রান্ত সকল গাইডলাইন ও ডকুমেন্টেশন।</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>UPCOMING</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=13G9twclEA5gKyQUYPbM0wt3xj75" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+               <div class="card">
+                <h4>UPCOMING</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                 <a href="https://drive.google.com/uc?export=download&id=1F3sPzWp2LJx_oL6SD9oaENKvbl_" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+                 <div class="card">
+                <h4>UPCOMING</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=1F3sPzWp2LJx_oL6SD9oaENKvbl_" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+                <div class="card">
+                <h4>UPCOMING</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=1EEvuidLaWMXEMVggZvjWJjv0" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Tab 3: BNBC -->
+    <div id="ecc-3" class="nested-tab-content" style="display: none;">
+        <h2>BNBC Code</h2>
+        <p style="color: #64748b; margin-top: 5px;">Bangladesh National Building Code (BNBC) ডকুমেন্টসমূহ।</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4>BNBC Electrical Code</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                 <a href="https://drive.google.com/uc?export=download&id=17dQ5T8fgyjvYLhtHR_9otkaxEN4krHg5" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+        </div>
+    </div>
+ </div>
+
+    <!-- Tab 4: NFPA (নতুন যোগ করা নেস্টেড ট্যাব) -->
+    <div id="ecc-4" class="nested-tab-content" style="display: none;">
+        <h2>NFPA Standards</h2>
+        <p style="color: #64748b; margin-top: 5px;">National Fire Protection Association Code ও Standard।</p>
+        <div class="card-grid">
+             <div class="card">
+                <h4>NFPA-70-2017-National Electrical Code</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=13G9twclEA5gKyQUYPbM0wt3xj75LWpwf" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+               <div class="card">
+                <h4>NFPA-70B-2019-Recommended Practice for Electrical Equipment Maintenance</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                 <a href="https://drive.google.com/uc?export=download&id=1F3sPzWp2LJx_oL6SD9oaENKvblEAlsG_" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+                 <div class="card">
+                <h4>NFPA-780-2017-Standard for the Installation of Lightning Protection Systems</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=1F3sPzWp2LJx_oL6SD9oaENKvblEAlsG_" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+                <div class="card">
+                <h4>UPCOMING</h4>
+                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">View Online Only</p>
+                <a href="https://drive.google.com/uc?export=download&id=1EEvuidLaWMXEMVggZvjWJjv05" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Live Class -->
+<div id="Live-Class" class="tab-content">
+<section class="zoom-live-section">
+  <div class="zoom-header">
+    <h2>Zoom Live Class</h2>
+    <p style="font-size: 15px; color: #6ef70b; margin-top: 5px;">লাইভ ক্লাসে যুক্ত হতে নিচের বাটনে  ক্লিক করুন</p>
+  </div>
+
+  <div id="loading-spinner" class="spinner">
+    ক্লাসের তথ্য লোড হচ্ছে...
+  </div>
+
+  <div id="class-container"></div>
+</section>
+
+   
+          </div>
+        </div>
+    </div>
+ </div>
+
+    <!-- ==================== 1. BBT VOLTAGE DROP CALCULATOR MODULE ==================== -->
+    <div id="bbt_voltage_drop_calc" class="calc-view">
+        <button class="btn-back" onclick="showDashboard()">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+        </button>
+
+        <div style="margin-bottom: 12px;">
+            <h2 class="title">BBT VOLTAGE DROP CALCULATOR</h2>
+            <h2 class="title" style="font-size: 0.8rem; color: #cbd5e1;">IEC 61439-6 Annex AA Standard</h2>
+        </div>
+
+        <div class="calc-card">
+            <div class="card-title">System Parameters</div>
+            <div class="constants-grid">
+                <div class="field-group">
+                    <label for="cos_phi">Cos Ø (PF):</label>
+                    <input type="number" step="0.01" id="cos_phi" class="input-control" value="0.8" oninput="recalculateAllBBT()">
+                </div>
+                <div class="field-group">
+                    <label for="sin_phi">Sin Ø:</label>
+                    <input type="text" id="sin_phi" class="input-control val-readonly" value="0.60" readonly>
+                </div>
+                <div class="field-group">
+                    <label for="supply_v">Voltage (V):</label>
+                    <input type="number" id="supply_v" class="input-control" value="400" oninput="recalculateAllBBT()">
+                </div>
+            </div>
+        </div>
+
+        <div class="calc-card">
+            <div class="card-title">Trunking Outlets</div>
+            <div class="table-wrapper">
+                <table id="bbtTable">
+                    <thead>
+                        <tr>
+                            <th>OUTLET</th>
+                            <th>LEN (M)</th>
+                            <th>KW</th>
+                            <th>L.CURRENT (A)</th>
+                            <th>B.RATING (A)</th>
+                            <th>BUSBAR TYPE</th>
+                            <th>R (mΩ/m)</th>
+                            <th>X (mΩ/m)</th>
+                            <th>VD (V)</th>
+                            <th>%VD</th>
+                            <th class="btn-del-col">ACT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBodyBBT">
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn btn-add" onclick="addRowBBT()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Add Outlet Row
+            </button>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-item">
+                <h4>Total VD</h4>
+                <div class="val" id="sum_vd">0.00 V</div>
+            </div>
+            <div class="summary-item">
+                <h4>Total %VD</h4>
+                <div class="val" id="sum_pvd">0.00 %</div>
+            </div>
+            <div class="summary-item">
+                <h4>Status</h4>
+                <div class="val" id="sys_status">ACCEPTED</div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-excel" onclick="exportToExcel('bbtTable', 'BBT_Voltage_Drop')">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg> Excel
+            </button>
+            <button class="btn btn-print" onclick="window.print()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg> Print / PDF
+            </button>
+        </div>
+
+        <div class="standard-note">
+            * Voltage drop calculation as per IEC 61439-6 Annex AA.<br>
+            * Lighting Circuit → maximum 3% | * Power Circuit → Maximum 5%
+        </div>
+    </div>
+
+    <!-- ==================== 2. CABLE VOLTAGE DROP CALCULATOR MODULE ==================== -->
+    <div id="voltage_drop_calc" class="calc-view">
+        <button class="btn-back" onclick="showDashboard()">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+        </button>
+
+        <div style="margin-bottom: 10px;">
+            <h2 class="title">VOLTAGE DROP CALCULATOR</h2>
+            <h2 class="title" style="font-size: 0.8rem; color: #cbd5e1;">SINGLE PHASE & THREE PHASE CABLE</h2>
+        </div>
+
+        <div class="formula-card">
+            <div class="vd-note">
+                <svg class="svg-icon" style="color:var(--app-yellow);" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                Note: Upto <strong style="color: var(--app-yellow); margin: 0 4px;">2.5%</strong> VD accepted.
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="vdTable">
+                <thead>
+                    <tr>
+                        <th class="sl-col">SL</th>
+                        <th style="width: 35%;">Parameters</th>
+                        <th style="width: 15%;">Symbol</th>
+                        <th style="width: 35%;">Circuit Data</th>
+                        <th style="width: 15%;">Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="sl-col">-</td>
+                        <td style="text-align: left;"><strong>Select System Phase</strong></td>
+                        <td><strong>Phase</strong></td>
+                        <td>
+                            <select id="input_phase" class="input-control" onchange="onPhaseChange()">
+                                <option value="1phase" selected>1-Phase</option>
+                                <option value="3phase">3-Phase</option>
+                            </select>
+                        </td>
+                        <td><span class="unit">System</span></td>
+                    </tr>
+                    <tr>
+                        <td class="sl-col">-</td>
+                        <td style="text-align: left;"><strong>Total Load Input (KW)</strong></td>
+                        <td><strong>KW</strong></td>
+                        <td>
+                            <input type="number" id="input_kw" class="input-control" value="5" oninput="calculateVD()">
+                        </td>
+                        <td><span class="unit">KW</span></td>
+                    </tr>
+                    <tr>
+                        <td class="sl-col">1</td>
+                        <td style="text-align: left;">Connected Load (KW × 1000)</td>
+                        <td>W</td>
+                        <td><strong id="out_watt" style="color: var(--app-yellow);">5,000</strong></td>
+                        <td><span class="unit">Watt</span></td>
+                    </tr>
+                    <tr>
+                        <td class="sl-col">2</td>
+                        <td style="text-align: left;"><strong>Conductor Size (Manual Input)</strong></td>
+                        <td><strong>A</strong></td>
+                        <td>
+                            <input type="number" id="input_conductor_manual" class="input-control" value="16" placeholder="16, 25..." oninput="calculateVD()">
+                        </td>
+                        <td><span class="unit">mm²</span></td>
+                    </tr>
+                    <tr>
+                        <td class="sl-col">3</td>
+                        <td style="text-align: left;">Service Voltage</td>
+                        <td>V</td>
+                        <td>
+                            <input type="number" id="input_v" class="input-control" value="230" oninput="calculateVD()">
+                        </td>
+                        <td><span class="unit">Volt</span></td>
+                    </tr>
+                    <tr>
+                        <td class="sl-col">4</td>
+                        <td style="text-align: left;">Circuit Length</td>
+                        <td>L</td>
+                        <td>
+                            <input type="number" id="input_l" class="input-control" value="100" oninput="calculateVD()">
+                        </td>
+                        <td><span class="unit">Mtr</span></td>
+                    </tr>
+                    <tr>
+                        <td class="sl-col">5</td>
+                        <td style="text-align: left;">Conductivity</td>
+                        <td>λ</td>
+                        <td>
+                            <select id="input_lambda" class="input-control" onchange="calculateVD()">
+                                <option value="56" selected>Copper (56)</option>
+                                <option value="34">Aluminium (34)</option>
+                            </select>
+                        </td>
+                        <td><span class="unit">Mtr</span></td>
+                    </tr>
+                    <tr>
+                        <td class="sl-col">6</td>
+                        <td style="text-align: left;"><strong>Voltage Drop (%)</strong></td>
+                        <td><strong>e</strong></td>
+                        <td>
+                            <span id="out_vd" class="result-highlight">2.110</span>%
+                            <br><span id="status_badge" class="status-badge status-pass">ACCEPTED</span>
+                        </td>
+                        <td><span class="unit">%</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="notes-section">
+            <p><strong>Note: Conductivity (λ):</strong> Copper = <strong style="color: var(--app-yellow);">56</strong>, Aluminium = <strong style="color: var(--app-yellow);">34</strong></p>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-reset" onclick="resetVDForm()">Reset</button>
+            <button class="btn btn-excel" onclick="exportToExcel('vdTable', 'Voltage_Drop_Calculation')">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg> Excel
+            </button>
+            <button class="btn btn-print" onclick="window.print()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg> Print / PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== 3. SUBSTATION CALCULATOR MODULE ==================== -->
+    <div id="substation_calc" class="calc-view">
+        <button class="btn-back" onclick="showDashboard()">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+        </button>
+
+        <div style="margin-bottom: 10px;">
+            <h2 class="title">SUBSTATION EQUIPMENT SELECTION</h2>
+            <h2 class="title" style="font-size: 0.8rem; color: #cbd5e1;">11KV / 0.415KV</h2>
+        </div>
+
+        <div class="control-panel">
+            <label for="colorStyle">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.55 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                Table Style:
+            </label>
+            <select id="colorStyle" onchange="changeTableStyle()">
+                <option value="style-zebra">Default Zebra</option>
+                <option value="style-nocolor">No Color</option>
+                <option value="style-inputs">Highlight Inputs</option>
+                <option value="style-outputs">Highlight Results</option>
+            </select>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="substationTable" class="style-zebra">
+                <thead>
+                    <tr>
+                        <th class="sl-col">SL</th>
+                        <th style="text-align: left; width: 60%;">Equipment / Parameter Description</th>
+                        <th style="width: 40%;">Calculated Value / Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-input">
+                        <td class="sl">1</td>
+                        <td style="text-align: left;"><strong>Maximum Load Demand</strong> <span class="input-tag">Input</span></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="number" id="in_demand" class="table-input" value="100" oninput="calculateSubstation()">
+                                <span class="unit-text">kW</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">2</td>
+                        <td style="text-align: left;"><strong>Power Factor</strong></td>
+                        <td><input type="number" step="0.01" id="in_pf" class="table-input" value="0.8" oninput="calculateSubstation()"></td>
+                    </tr>
+                    <tr>
+                        <td class="sl">3</td>
+                        <td style="text-align: left;"><strong>Maximum Apparent Power (1 / 2)</strong></td>
+                        <td class="val-bold" id="out_r3">125.00 kVA</td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">4</td>
+                        <td style="text-align: left;"><strong>Loading Percentage</strong></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="number" id="in_loadPct" class="table-input" value="85" oninput="calculateSubstation()">
+                                <span class="unit-text">%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="sl">5</td>
+                        <td style="text-align: left;"><strong>Calculated Transformer Rating (3 / 4)</strong></td>
+                        <td class="val-bold" id="out_r5">147.06 kVA</td>
+                    </tr>
+                    <tr>
+                        <td class="sl">6</td>
+                        <td style="text-align: left;"><strong>Selected Standard Transformer Rating</strong></td>
+                        <td class="val-bold" id="out_r6" style="color: var(--app-yellow);">150 kVA</td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">7</td>
+                        <td style="text-align: left;"><strong>Short Circuit Impedance (%) Z</strong></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="number" id="in_zPct" class="table-input" value="6" oninput="calculateSubstation()">
+                                <span class="unit-text">%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">8</td>
+                        <td style="text-align: left;"><strong>Cable Factor (K)</strong> <span class="input-tag">Input</span></td>
+                        <td>
+                            <select id="in_kFactor" class="table-select" onchange="calculateSubstation()">
+                                <option value="0.143" selected>Copper (Cu) - 0.143</option>
+                                <option value="0.098">Aluminium (Al) - 0.098</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">9</td>
+                        <td style="text-align: left;"><strong>Fault Clearing Time (T)</strong></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="number" id="in_timeT" class="table-input" value="3" oninput="calculateSubstation()">
+                                <span class="unit-text">sec</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="sl">10</td>
+                        <td style="text-align: left;"><strong>Primary Current, Ip (6 * 0.05249)</strong></td>
+                        <td class="val-bold" id="out_r10">7.87 A</td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">11</td>
+                        <td style="text-align: left;"><strong>Risk Factor</strong> <span class="input-tag">Input</span></td>
+                        <td><input type="number" step="0.01" id="in_riskFactor" class="table-input" value="1.25" oninput="calculateSubstation()"></td>
+                    </tr>
+                    <tr>
+                        <td class="sl">12</td>
+                        <td style="text-align: left;"><strong>Secondary Current, Ic (6 * 1.39)</strong></td>
+                        <td class="val-bold" id="out_r12">208.50 A</td>
+                    </tr>
+                    <tr>
+                        <td class="sl">13</td>
+                        <td style="text-align: left;"><strong>Final Current Rating For Secondary (11 * 12)</strong></td>
+                        <td class="val-bold" id="out_r13">260.62 A</td>
+                    </tr>
+                    <tr>
+                        <td class="sl">14</td>
+                        <td style="text-align: left;"><strong>Circuit Breaker Size</strong></td>
+                        <td class="val-bold" id="out_r14" style="color: var(--app-yellow);">CB 300 A</td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">15</td>
+                        <td style="text-align: left;"><strong>Safety Factor</strong></td>
+                        <td><input type="number" id="in_safetyFactor" class="table-input" value="10" oninput="calculateSubstation()"></td>
+                    </tr>
+                    <tr class="row-input">
+                        <td class="sl">16</td>
+                        <td style="text-align: left;"><strong>Percentage Impedance (%)</strong> <span class="input-tag">Input</span></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="number" step="0.01" id="in_pctImp" class="table-input" value="0.06" oninput="calculateSubstation()">
+                                <span class="unit-text">%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="sl">17</td>
+                        <td style="text-align: left;"><strong>Short Circuit Current, Ish = ((10 / 16) * 15) / 1000</strong></td>
+                        <td class="val-bold" id="out_r17">1.3122 kA</td>
+                    </tr>
+                    <tr>
+                        <td class="sl">18</td>
+                        <td style="text-align: left;"><strong>Calculated HT Cable Size = (17 * 1.732050) / 8</strong></td>
+                        <td class="val-bold" id="out_r18">15.89 sq.mm</td>
+                    </tr>
+                    <tr>
+                        <td class="sl">19</td>
+                        <td style="text-align: left;"><strong>Primary Cable Size For Using (HT)</strong></td>
+                        <td class="val-bold" id="out_r19">50 RM</td>
+                    </tr>
+                    <tr>
+                        <td class="sl">20</td>
+                        <td style="text-align: left;"><strong>Secondary Cable Size For Using (LT)</strong></td>
+                        <td class="val-bold" id="out_r20">95 RM</td>
+                    </tr>
+                    <tr>
+                        <td class="sl">21</td>
+                        <td style="text-align: left;"><strong>PFI Rating (6 * 0.6)</strong></td>
+                        <td class="val-bold" id="out_r21">90.00 KVAR</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-excel" onclick="exportToExcel('substationTable', 'Substation_Selection')">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg> Excel
+            </button>
+            <button class="btn btn-green" onclick="window.print()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg> Print / PDF
+            </button>
+        </div>
+    </div>
+
+</div>
+
+ <!-- 🟡 FOOTER BANNER -->
+    <div class="app-footer">
+<a href="https://www.facebook.com/minhazalam1992" target="_blank" rel="noopener noreferrer" style="color: #1877F2; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+<svg class="svg-icon" viewBox="0 0 24 24" style="fill: currentColor; width: 24px; height: 24px;">
+<path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.12 8.44 9.88v-6.99H7.9v-2.89h2.54V9.8c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.89h-2.33v6.99C18.34 21.12 22 16.99 22 12z"/></svg>
+ Facebook</a>
+        <span>|</span>
+<a href="https://wa.me/8801714654448" target="_blank" rel="noopener noreferrer" style="color: #25D366; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: bold;">
+<svg class="svg-icon" viewBox="0 0 24 24" style="fill: #25D366; width: 24px; height: 24px;">
+<path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 16.39c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.188 8.188 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.183 8.183 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.18-.54.06s-1.05-.39-2-1.23c-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.44.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.44s-.56-1.36-.77-1.86c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.18-.47-.3z"/></svg>WhatsApp</a>
+    </div>
+
+<!-- Modal window for PDF/Video Reading -->
+<div id="pdfModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Read Book</h3>
+            <span class="close-btn" onclick="closePdfViewer()">&times;</span>
+        </div>
+        <iframe id="pdfFrame" class="pdf-frame" allowfullscreen="true" src=""></iframe>
+    </div>
+</div>
+
+<!-- 🧮 APP LOGIC & SECURE DEVICE LICENSE CALCULATIONS -->
+<script>
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyBYoDK2MQAR5vj3K3M4t45tw0hcM7t2Ers",
+        authDomain: "sel-2026.firebaseapp.com",
+        databaseURL: "https://sel-2026-default-rtdb.firebaseio.com",
+        projectId: "sel-2026",
+        storageBucket: "sel-2026.firebasestorage.app",
+        messagingSenderId: "839179971811",
+        appId: "1:839179971811:web:c2d02dfd5549822f2629d6"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // 🔴 আপনার ইমেইল দিয়ে Formspree এ্যাকাউন্ট খুলে Endpoint আইডিটি পরিবর্তন করে নিন
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xeajavvj";
+
+    window.onload = function() {
+        initBBTTable();
+        calculateVD();
+        calculateSubstation();
+        checkLicenseStatus();
+    };
+
+    function toggleAuthMode(mode) {
+        const paySec = document.getElementById('paymentRequestSection');
+        const actSec = document.getElementById('licenseActivateSection');
+        const msg = document.getElementById('licenseMsg');
+        msg.innerHTML = '';
+
+        if(mode === 'login') {
+            paySec.style.display = 'none';
+            actSec.style.display = 'block';
+        } else {
+            paySec.style.display = 'block';
+            actSec.style.display = 'none';
+        }
+    }
+
+    // 📩 পেমেন্ট রিকোয়েস্ট সাবমিট এবং ইমেইল পাঠানোর ফাংশন
+    function submitPaymentRequest(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('payName').value.trim();
+        const email = document.getElementById('payEmail').value.trim();
+        const phone = document.getElementById('payPhone').value.trim();
+        const method = document.getElementById('payMethod').value;
+        const trxId = document.getElementById('payTrxId').value.trim();
+        const msgBox = document.getElementById('licenseMsg');
+        const submitBtn = document.getElementById('paySubmitBtn');
+
+        if(!name || !email || !phone || !method || !trxId) {
+            msgBox.style.color = '#f87171';
+            msgBox.innerHTML = '❌ অনুগ্রহ করে সকল তথ্য পূরণ করুন!';
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'পাঠানো হচ্ছে...';
+        msgBox.style.color = '#ffcc00';
+        msgBox.innerHTML = '⏳ আপনার পেমেন্ট তথ্য পাঠানো হচ্ছে...';
+
+        // Formspree API এর মাধ্যমে মেইল পাঠানো
+        fetch(FORMSPREE_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                Name: name,
+                _replyto: email, // এই ইমেইলে সরাসরি Reply দিয়ে License Key পাঠানো যাবে
+                Email: email,
+                Phone: phone,
+                Payment_Method: method,
+                Transaction_ID: trxId,
+                Message: `নতুন পেমেন্ট রিকোয়েস্ট এসেছে!\n\nনাম: ${name}\nইমেইল: ${email}\nমোবাইল: ${phone}\nমেথড: ${method}\nTrxID: ${trxId}`
+            })
+        })
+.then(response => {
+    if (response.ok) {
+        msgBox.style.color = '#ffffff';
+        
+        // 👉 টেক্সটের সাইজ ছোট করার লাইন (এখানে ১৩px দেয়া হয়েছে)
+        msgBox.style.fontSize = '10px'; 
+        
+        msgBox.innerHTML = '✅ পেমেন্ট তথ্য সফলভাবে গৃহীতি হয়েছে! যাচাই শেষেই লাইসেন্স কী পৌঁছে যাবে আপনার ইমেইলে।';
+        document.getElementById('paymentForm').reset();
+    }
+})
+        .catch(error => {
+            msgBox.style.color = '#f87171';
+            msgBox.innerHTML = '❌ নেটওয়ার্ক সমস্যা! অনুগ্রহ করে ইন্টারনেটের সাথে যুক্ত থাকুন।';
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'পেমেন্ট সাবমিট সফল';
+        });
+    }
+
+    function getUniqueDeviceId() {
+        let devId = localStorage.getItem('app_device_fingerprint');
+        if (!devId) {
+            devId = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+            localStorage.setItem('app_device_fingerprint', devId);
+        }
+        return devId;
+    }
+
+    function checkLicenseStatus() {
+        const savedLicenseKey = localStorage.getItem('active_license_key');
+        const savedEmail = localStorage.getItem('userEmail');
+        const isLicensed = localStorage.getItem('appLicensed');
+        const currentDeviceId = getUniqueDeviceId();
+
+        if (savedLicenseKey && savedEmail && isLicensed === 'true') {
+            if (navigator.onLine) {
+                db.ref('licenses/' + savedLicenseKey).once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        if (data.assignedDevice === currentDeviceId) {
+                            document.getElementById('licenseOverlay').style.display = 'none';
+                            document.getElementById('userStatus').innerText = "Logged in as: " + savedEmail;
+                        } else {
+                            forceLogout("❌ এই ডিভাইসে লাইসেন্সটি অনুমোদিত নয়!");
+                        }
+                    } else {
+                        forceLogout("❌ লাইসেন্স ডাটা খুঁজে পাওয়া যায়নি!");
+                    }
+                }).catch(() => {
+                    document.getElementById('licenseOverlay').style.display = 'none';
+                    document.getElementById('userStatus').innerText = "Logged in as: " + savedEmail;
+                });
+            } else {
+                document.getElementById('licenseOverlay').style.display = 'none';
+                document.getElementById('userStatus').innerText = "Logged in as: " + savedEmail + " (Offline)";
+            }
+        } else {
+            document.getElementById('licenseOverlay').style.display = 'flex';
+        }
+    }
+
+    function activateLicense() {
+        const email = document.getElementById('loginEmailInput').value.trim();
+        const pass = document.getElementById('loginPassInput').value.trim();
+        const key = document.getElementById('licenseKeyInput').value.trim().toUpperCase();
+        const msgBox = document.getElementById('licenseMsg');
+        const currentDeviceId = getUniqueDeviceId();
+
+        if (!email || !pass || !key) {
+            msgBox.style.color = '#f87171';
+            msgBox.innerHTML = '❌ ইমেইল, পাসওয়ার্ড এবং লাইসেন্স কী পূরণ করুন।';
+            return;
+        }
+
+        msgBox.style.color = '#ffcc00';
+        msgBox.innerHTML = '⏳ লাইসেন্স যাচাই করা হচ্ছে...';
+
+        db.ref('licenses/' + key).once('value').then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (!data.assignedDevice || data.assignedDevice === currentDeviceId) {
+                    db.ref('licenses/' + key).update({
+                        assignedDevice: currentDeviceId,
+                        userEmail: email,
+                        activatedAt: new Date().toISOString()
+                    }).then(() => {
+                        localStorage.setItem('active_license_key', key);
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('appLicensed', 'true');
+                        document.getElementById('licenseOverlay').style.display = 'none';
+                        document.getElementById('userStatus').innerText = "Logged in as: " + email;
+                    });
+                } else {
+                    msgBox.style.color = '#f87171';
+                    msgBox.innerHTML = '❌ এই লাইসেন্স কী-টি অন্য একটি ডিভাইসে সক্রিয় করা আছে!';
+                }
+            } else {
+                msgBox.style.color = '#f87171';
+                msgBox.innerHTML = '❌ লাইসেন্স কী সঠিক নয়!';
+            }
+        }).catch(err => {
+            msgBox.style.color = '#f87171';
+            msgBox.innerHTML = '❌ নেটওয়ার্ক ত্রুটি! অনুগ্রহ করে ইন্টারনেট চেক করুন।';
+        });
+    }
+
+    function forceLogout(reason) {
+        localStorage.removeItem('active_license_key');
+        localStorage.removeItem('appLicensed');
+        document.getElementById('licenseOverlay').style.display = 'flex';
+        const msgBox = document.getElementById('licenseMsg');
+        msgBox.style.color = '#f87171';
+        msgBox.innerHTML = reason;
+    }
+
+    function showDashboard() {
+        const views = document.querySelectorAll('.calc-view');
+        views.forEach(v => v.classList.remove('active'));
+        document.getElementById('dashboard_view').style.display = 'block';
+    }
+
+    function openModule(moduleId) {
+        document.getElementById('dashboard_view').style.display = 'none';
+        const views = document.querySelectorAll('.calc-view');
+        views.forEach(v => v.classList.remove('active'));
+        document.getElementById(moduleId).classList.add('active');
+    }
+
+    function openSubTab(evt, tabName) {
+        let i, tabcontent, subtablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove("active");
+        }
+        subtablinks = document.getElementsByClassName("sub-tab-btn");
+        for (i = 0; i < subtablinks.length; i++) {
+            subtablinks[i].className = subtablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.className += " active";
+    }
+
+    function openEbookNestedTab(evt, tabName) {
+        let i, nestedcontent, nestedlinks;
+        nestedcontent = document.getElementsByClassName("ebook-nested-content");
+        for (i = 0; i < nestedcontent.length; i++) {
+            nestedcontent[i].style.display = "none";
+            nestedcontent[i].classList.remove("active");
+        }
+        nestedlinks = evt.currentTarget.parentElement.getElementsByClassName("nested-tab-btn");
+        for (i = 0; i < nestedlinks.length; i++) {
+            nestedlinks[i].className = nestedlinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.className += " active";
+    }
+
+    function openNestedTab(evt, tabName) {
+        let i, nestedcontent, nestedlinks;
+        nestedcontent = document.getElementsByClassName("nested-tab-content");
+        for (i = 0; i < nestedcontent.length; i++) {
+            nestedcontent[i].style.display = "none";
+            nestedcontent[i].classList.remove("active");
+        }
+        nestedlinks = evt.currentTarget.parentElement.getElementsByClassName("nested-tab-btn");
+        for (i = 0; i < nestedlinks.length; i++) {
+            nestedlinks[i].className = nestedlinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.className += " active";
+    }
+
+    function openInPageViewer(url, title = "Content Viewer") {
+        const container = document.getElementById('embeddedViewerContainer');
+        const frame = document.getElementById('embeddedViewerFrame');
+        const titleElement = document.getElementById('embeddedViewerTitle');
+        
+        let finalUrl = url;
+        if (url.includes('drive.google.com')) {
+            finalUrl = url.replace('/view?usp=sharing', '/preview').replace('/view', '/preview');
+        }
+
+        titleElement.innerText = title;
+        frame.src = finalUrl;
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeInPageViewer() {
+        const container = document.getElementById('embeddedViewerContainer');
+        const frame = document.getElementById('embeddedViewerFrame');
+        frame.src = "";
+        container.style.display = 'none';
+    }
+
+    function closePdfViewer() {
+        document.getElementById('pdfModal').style.display = 'none';
+        document.getElementById('pdfFrame').src = '';
+    }
+
+    /* BBT CALCULATOR LOGIC */
+    const initialBBTData = [
+        { outlet: "D-G-F", length: 100, kw: "", current: 400, rating: 630, type: "CU", r: 0.065, x: 0.053 },
+        { outlet: "D-E",   length: 80,  kw: "", current: 300, rating: 630, type: "CU", r: 0.151, x: 0.053 },
+        { outlet: "B-C",   length: 50,  kw: "", current: 200, rating: 400, type: "CU", r: 0.239, x: 0.155 },
+        { outlet: "A-D",   length: 140, kw: "", current: 1600, rating: 2000, type: "CU", r: 0.021, x: 0.009 }
+    ];
+
+    function initBBTTable() {
+        const tbody = document.getElementById('tableBodyBBT');
+        if(!tbody) return;
+        tbody.innerHTML = "";
+        initialBBTData.forEach(row => addRowBBT(row));
+        recalculateAllBBT();
+    }
+
+    function addRowBBT(data = null) {
+        const tbody = document.getElementById('tableBodyBBT');
+        if(!tbody) return;
+        const tr = document.createElement('tr');
+
+        const d = data || { outlet: "NEW", length: 0, kw: "", current: 0, rating: 400, type: "CU", r: 0, x: 0 };
+
+        tr.innerHTML = `
+            <td><input type="text" class="tbl-input row-outlet" value="${d.outlet}"></td>
+            <td><input type="number" class="tbl-input row-length" value="${d.length}" oninput="recalculateAllBBT()"></td>
+            <td><input type="number" class="tbl-input row-kw" value="${d.kw}" placeholder="kW" oninput="onKwInput(this)"></td>
+            <td><input type="number" class="tbl-input row-current" value="${d.current}" oninput="onCurrentInput(this)"></td>
+            <td>
+                <select class="tbl-select row-rating" onchange="recalculateAllBBT()">
+                    <option value="250" ${d.rating == 250 ? 'selected' : ''}>250 A</option>
+                    <option value="400" ${d.rating == 400 ? 'selected' : ''}>400 A</option>
+                    <option value="630" ${d.rating == 630 ? 'selected' : ''}>630 A</option>
+                    <option value="800" ${d.rating == 800 ? 'selected' : ''}>800 A</option>
+                    <option value="1000" ${d.rating == 1000 ? 'selected' : ''}>1000 A</option>
+                    <option value="1250" ${d.rating == 1250 ? 'selected' : ''}>1250 A</option>
+                    <option value="1600" ${d.rating == 1600 ? 'selected' : ''}>1600 A</option>
+                    <option value="2000" ${d.rating == 2000 ? 'selected' : ''}>2000 A</option>
+                    <option value="2500" ${d.rating == 2500 ? 'selected' : ''}>2500 A</option>
+                </select>
+            </td>
+            <td>
+                <select class="tbl-select row-type" onchange="recalculateAllBBT()">
+                    <option value="CU" ${d.type == 'CU' ? 'selected' : ''}>Copper (CU)</option>
+                    <option value="AL" ${d.type == 'AL' ? 'selected' : ''}>Aluminium (AL)</option>
+                </select>
+            </td>
+            <td><input type="number" step="0.001" class="tbl-input row-r" value="${d.r}" oninput="recalculateAllBBT()"></td>
+            <td><input type="number" step="0.001" class="tbl-input row-x" value="${d.x}" oninput="recalculateAllBBT()"></td>
+            <td class="res-highlight row-vd">0.00</td>
+            <td class="res-highlight row-pvd">0.00%</td>
+            <td class="btn-del-col"><button class="btn-del" onclick="deleteRowBBT(this)">✖</button></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function deleteRowBBT(btn) {
+        const row = btn.closest('tr');
+        row.remove();
+        recalculateAllBBT();
+    }
+
+    function onKwInput(elem) {
+        const row = elem.closest('tr');
+        const kw = parseFloat(elem.value) || 0;
+        const cosPhi = parseFloat(document.getElementById('cos_phi').value) || 0.8;
+        const v = parseFloat(document.getElementById('supply_v').value) || 400;
+
+        if (kw > 0) {
+            const current = (kw * 1000) / (Math.sqrt(3) * v * cosPhi);
+            row.querySelector('.row-current').value = current.toFixed(2);
+        }
+        recalculateAllBBT();
+    }
+
+    function onCurrentInput(elem) {
+        const row = elem.closest('tr');
+        row.querySelector('.row-kw').value = "";
+        recalculateAllBBT();
+    }
+
+    function recalculateAllBBT() {
+        const cosPhi = parseFloat(document.getElementById('cos_phi').value) || 0.8;
+        const sinPhi = Math.sin(Math.acos(Math.min(Math.max(cosPhi, -1), 1)));
+        document.getElementById('sin_phi').value = sinPhi.toFixed(2);
+
+        const supplyV = parseFloat(document.getElementById('supply_v').value) || 400;
+
+        let totalVD = 0;
+        const rows = document.querySelectorAll('#tableBodyBBT tr');
+
+        rows.forEach(tr => {
+            const len = parseFloat(tr.querySelector('.row-length').value) || 0;
+            const current = parseFloat(tr.querySelector('.row-current').value) || 0;
+            const r = parseFloat(tr.querySelector('.row-r').value) || 0;
+            const x = parseFloat(tr.querySelector('.row-x').value) || 0;
+
+            // Calculation as per IEC 61439-6: VD = √3 * I * L * (R*cosØ + X*sinØ) / 1000
+            const vd = (Math.sqrt(3) * current * len * (r * cosPhi + x * sinPhi)) / 1000;
+            const pvd = supplyV > 0 ? (vd / supplyV) * 100 : 0;
+
+            tr.querySelector('.row-vd').innerText = vd.toFixed(2);
+            tr.querySelector('.row-pvd').innerText = pvd.toFixed(2) + "%";
+
+            totalVD += vd;
+        });
+
+        const totalPVD = supplyV > 0 ? (totalVD / supplyV) * 100 : 0;
+
+        document.getElementById('sum_vd').innerText = totalVD.toFixed(2) + " V";
+        document.getElementById('sum_pvd').innerText = totalPVD.toFixed(2) + " %";
+
+        const statusElem = document.getElementById('sys_status');
+        if (totalPVD <= 5.0) {
+            statusElem.innerText = "ACCEPTED";
+            statusElem.style.color = "#4ade80";
+        } else {
+            statusElem.innerText = "REJECTED";
+            statusElem.style.color = "#f87171";
+        }
+    }
+
+    /* CABLE VOLTAGE DROP CALCULATOR LOGIC */
+    function onPhaseChange() {
+        const phase = document.getElementById('input_phase').value;
+        const vInput = document.getElementById('input_v');
+        if (phase === '1phase') {
+            vInput.value = 230;
+        } else {
+            vInput.value = 400;
+        }
+        calculateVD();
+    }
+
+    function calculateVD() {
+        const phase = document.getElementById('input_phase').value;
+        const kw = parseFloat(document.getElementById('input_kw').value) || 0;
+        const conductor = parseFloat(document.getElementById('input_conductor_manual').value) || 1;
+        const v = parseFloat(document.getElementById('input_v').value) || 230;
+        const l = parseFloat(document.getElementById('input_l').value) || 0;
+        const lambda = parseFloat(document.getElementById('input_lambda').value) || 56;
+
+        const watt = kw * 1000;
+        document.getElementById('out_watt').innerText = watt.toLocaleString('en-US');
+
+        let vdPercent = 0;
+
+        if (phase === '1phase') {
+            // Formula for 1-Phase: e = (200 * L * W) / (λ * A * V^2)
+            vdPercent = (200 * l * watt) / (lambda * conductor * Math.pow(v, 2));
+        } else {
+            // Formula for 3-Phase: e = (100 * L * W) / (λ * A * V^2)
+            vdPercent = (100 * l * watt) / (lambda * conductor * Math.pow(v, 2));
+        }
+
+        const outVdElem = document.getElementById('out_vd');
+        const badgeElem = document.getElementById('status_badge');
+
+        if (outVdElem) outVdElem.innerText = vdPercent.toFixed(3);
+
+        if (badgeElem) {
+            if (vdPercent <= 2.5) {
+                badgeElem.innerText = "ACCEPTED";
+                badgeElem.className = "status-badge status-pass";
+            } else {
+                badgeElem.innerText = "NOT ACCEPTED";
+                badgeElem.className = "status-badge status-fail";
+            }
+        }
+    }
+
+    function resetVDForm() {
+        document.getElementById('input_phase').value = "1phase";
+        document.getElementById('input_kw').value = 5;
+        document.getElementById('input_conductor_manual').value = 16;
+        document.getElementById('input_v').value = 230;
+        document.getElementById('input_l').value = 100;
+        document.getElementById('input_lambda').value = 56;
+        calculateVD();
+    }
+
+    /* ------------------- SUBSTATION CALCULATOR LOGIC ------------------- */
+    function changeTableStyle() {
+        const table = document.getElementById('substationTable');
+        const selectedStyle = document.getElementById('colorStyle').value;
+        table.className = '';
+        table.classList.add(selectedStyle);
+    }
+
+    function calculateSubstation() {
+        const kw = parseFloat(document.getElementById('in_demand').value) || 0;
+        const pf = parseFloat(document.getElementById('in_pf').value) || 0.8;
+        const loadPct = (parseFloat(document.getElementById('in_loadPct').value) || 85) / 100;
+        const kFactor = parseFloat(document.getElementById('in_kFactor').value) || 0.143;
+        const riskFactor = parseFloat(document.getElementById('in_riskFactor').value) || 1.25;
+        const safetyFactor = parseFloat(document.getElementById('in_safetyFactor').value) || 10;
+        const pctImp = parseFloat(document.getElementById('in_pctImp').value) || 0.06;
+
+        const r3 = pf > 0 ? kw / pf : 0;
+        document.getElementById('out_r3').innerText = r3.toFixed(2) + " kVA";
+
+        const r5 = loadPct > 0 ? r3 / loadPct : 0;
+        document.getElementById('out_r5').innerText = r5.toFixed(2) + " kVA";
+
+        const stdSizes = [100, 150, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1630, 2000, 2500, 3000, 4000];
+        const r6 = stdSizes.find(s => s >= r5) || stdSizes[stdSizes.length - 1];
+        document.getElementById('out_r6').innerText = r6 + " kVA";
+
+        const r10 = r6 * 0.05249;
+        document.getElementById('out_r10').innerText = r10.toFixed(2) + " A";
+
+        const r12 = r6 * 1.39;
+        document.getElementById('out_r12').innerText = r12.toFixed(2) + " A";
+
+        const r13 = riskFactor * r12;
+        document.getElementById('out_r13').innerText = r13.toFixed(2) + " A";
+
+        let cb = "CB 6030 A";
+        if (r13 <= 200) cb = "CB 200 A";
+        else if (r13 <= 250) cb = "CB 250 A";
+        else if (r13 <= 300) cb = "CB 300 A";
+        else if (r13 <= 400) cb = "CB 400 A";
+        else if (r13 <= 630) cb = "CB 630 A";
+        else if (r13 <= 800) cb = "CB 800 A";
+        else if (r13 <= 1000) cb = "CB 1000 A";
+        else if (r13 <= 1250) cb = "CB 1250 A";
+        else if (r13 <= 1600) cb = "CB 1600 A";
+        else if (r13 <= 2000) cb = "CB 2000 A";
+        else if (r13 <= 2500) cb = "CB 2500 A";
+        else if (r13 <= 3000) cb = "CB 3000 A";
+        else if (r13 <= 4000) cb = "CB 4000 A";
+        else if (r13 <= 6030) cb = "CB 6030 A";
+        document.getElementById('out_r14').innerText = cb;
+
+        const r17 = pctImp > 0 ? ((r10 / pctImp) * safetyFactor) / 1000 : 0;
+        document.getElementById('out_r17').innerText = r17.toFixed(4) + " kA";
+
+        const r18 = kFactor > 0 ? (r17 * 1.732050) / kFactor : 0;
+        document.getElementById('out_r18').innerText = r18.toFixed(2) + " sq.mm";
+
+        let htCable = "50 RM";
+        if (r6 <= 400) htCable = "50 RM";
+        else if (r6 === 500) htCable = "70 RM";
+        else if (r6 === 630) htCable = "95 RM";
+        else if (r6 <= 1000) htCable = "120 RM";
+        else if (r6 === 1250) htCable = "150 RM";
+        else if (r6 === 1630) htCable = "185 RM";
+        else if (r6 === 2000) htCable = "240 RM";
+        else if (r6 === 2500) htCable = "300 RM";
+        else if (r6 === 3000) htCable = "400 RM";
+        else if (r6 === 4000) htCable = "500 RM";
+
+        document.getElementById('out_r19').innerText = htCable;
+
+        let ltCable = "2(1CX300) RM";
+        if (r6 <= 100) ltCable = "50 RM";
+        else if (r6 <= 150) ltCable = "95 RM";
+        else if (r6 <= 200) ltCable = "150 RM";
+        else if (r6 <= 250) ltCable = "240 RM";
+        else if (r6 <= 315) ltCable = "400 RM";
+        else if (r6 <= 400) ltCable = "500 RM";
+        else if (r6 <= 630) ltCable = "2(1CX300) RM";
+        else if (r6 <= 800) ltCable = "2(1CX500) RM";
+        else if (r6 <= 1250) ltCable = "3(1CX400) RM";
+        else if (r6 <= 1630) ltCable = "4(1CX500) RM";
+        document.getElementById('out_r20').innerText = ltCable;
+
+        const r21 = r6 * 0.6;
+        document.getElementById('out_r21').innerText = r21.toFixed(2) + " KVAR";
+    }
+   <!-- JavaScript Functionality -->
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQBLf0K8Ebu7ReN6NaNSLZy7BL4Goz_op6RzzXrtL1MEHThqzpfNZQBSysZzSoWizb2w/exec";
+
+async function fetchLiveClasses() {
+  const container = document.getElementById('class-container');
+  const spinner = document.getElementById('loading-spinner');
+
+  if (!container) return;
+
+  // পুরোনো সব কন্টেন্ট পুরোপুরি মুছে ফেলা
+  container.innerHTML = '';
+
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=getClasses`);
+    const classes = await response.json();
+
+    if (spinner) spinner.style.display = 'none';
+
+    if (!classes || classes.length === 0) {
+      container.innerHTML = '<p style="color: #ffffff; text-align: center;">বর্তমানে কোনো লাইভ ক্লাস নেই।</p>';
+      return;
+    }
+
+    classes.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'zoom-card';
+
+      let statusHeader = '';
+      let isLive = false;
+      let btnText = '📹 Join Zoom Live Class Directly';
+
+      const status = (item.status || '').toUpperCase();
+
+      if (status === 'LIVE') {
+        statusHeader = '<div class="status-badge"><span class="red-dot"></span> LIVE CLASS NOW</div>';
+        isLive = true;
+      } else if (status === 'UPCOMING') {
+        statusHeader = '<div class="status-badge" style="color: #f1c40f;">⏳ UPCOMING CLASS</div>';
+        btnText = 'Class Not Started Yet';
+      } else {
+        statusHeader = '<div class="status-badge" style="color: #F54927;">✔ CLASS COMPLETED</div>';
+        btnText = 'Class Completed';
+      }
+
+      card.innerHTML = `
+        ${statusHeader}
+        <div class="class-title">${item.title || 'AutoCAD Electrical Design'}</div>
+        <div class="info-text">⏰ তারিখ: ${item.date || ':28.08.26'}</div>
+        <div class="info-text">⏰ সময়: ${item.time || 'রাত ৯:০০ টা'}</div>
+        <div class="info-text">🔑 Passcode: <span class="passcode-text">123456</span></div>
+        <button class="zoom-join-btn ${!isLive ? 'disabled' : ''}" 
+                ${!isLive ? 'disabled' : ''} 
+                onclick="promptEmailVerification('${item.zoomLink || '#'}')">
+          ${btnText}
+        </button>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error('Error fetching class data:', error);
+    if (spinner) spinner.innerText = 'তথ্য লোড করতে ব্যর্থ হয়েছে। পরে আবার চেষ্টা করুন।';
+  }
+}
+
+async function promptEmailVerification(zoomUrl) {
+  if (!zoomUrl || zoomUrl === '#') {
+    alert("জুম লিংকটি সচল নয়!");
+    return;
+  }
+
+  const savedEmail = localStorage.getItem('verifiedStudentEmail');
+
+  if (savedEmail) {
+    window.open(zoomUrl, '_blank');
+    return;
+  }
+
+  const userEmail = prompt("লাইভ ক্লাসে যুক্ত হতে আপনার নিবন্ধিত জিমেইল (Gmail) দিন:");
+
+  if (!userEmail) {
+    alert("লাইভ ক্লাসে জয়েন করার জন্য জিমেইল দেওয়া বাধ্যতামূলক!");
+    return;
+  }
+
+  try {
+    const verifyResponse = await fetch(`${APPS_SCRIPT_URL}?action=verifyEmail&email=${encodeURIComponent(userEmail)}`);
+    const result = await verifyResponse.json();
+
+    if (result.allowed) {
+      alert("ইমেইল সফলভাবে যাচাই করা হয়েছে! আপনাকে জুম ক্লাসে নিয়ে যাওয়া হচ্ছে।");
+      localStorage.setItem('verifiedStudentEmail', userEmail);
+      window.open(zoomUrl, '_blank');
+    } else {
+      alert("দুঃখিত, এই জিমেইলটি আমাদের রেজিস্টার্ড স্টুডেন্ট তালিকায় পাওয়া যায়নি। সঠিক জিমেইল দিন অথবা পেমেন্ট সম্পন্ন করুন।");
+    }
+  } catch (err) {
+    console.error("Verification Error:", err);
+    alert("ইমেইল যাচাই করতে সমস্যা হয়েছে, পুনরায় চেষ্টা করুন।");
+  }
+}
+
+// নিশ্চিত করা যেন ফাংশনটি শুধু একবারই রান হয়
+document.addEventListener('DOMContentLoaded', fetchLiveClasses, { once: true });
+</script>
+</body>
+</html>
