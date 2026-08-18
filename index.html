@@ -14,8 +14,8 @@
               :root {
             /* 🎨 CLEAN LIGHT THEME (EYE-FRIENDLY & STANDARD) */
             --app-bg: #ffffff;             /* Main Background: Clean White */
-            --app-card-bg: #f8fafc;        /* Card Background: Very Soft Slate */
-            --app-border: #e2e8f0;         /* Soft Gray Border */
+            --app-card-bg: #dfe5eb;        /* Card Background: Very Soft Slate */
+            --app-border: #cab4b4;         /* Soft Gray Border */
             --app-primary: #1e3a8a;        /* Deep Royal Blue Accent */
             --text-dark: #0f172a;          /* Deep Dark Text for high readability */
             --text-muted: #475569;         /* Subdued Slate Text */
@@ -64,7 +64,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(15, 23, 42, 0.4);
+            background-color: rgba(31, 9, 21, 0.4);
             backdrop-filter: blur(4px);
             z-index: 99999;
             display: flex;
@@ -75,7 +75,7 @@
         }
 
         .license-card {
-            background-color: #ffffff;
+            background-color: #dbdae2;
             border: 1px solid var(--app-border);
             border-top: 4px solid var(--app-primary);
             border-radius: 12px;
@@ -85,7 +85,7 @@
             max-height: 98vh;
             overflow: hidden;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 25px #ffffff;
         }
 
         .license-card h2, .license-card h3 {
@@ -101,7 +101,7 @@
         }
 
         .payment-info-box {
-            background: #f8fafc;
+            background: #ffffff;
             border: 1px dashed var(--app-primary);
             border-radius: 8px;
             padding: 8px 10px !important;
@@ -140,9 +140,9 @@
 
         .license-btn {
             padding: 8px 14px !important;
-            font-size: 0.85rem !important;
+            font-size: 1rem !important;
             margin-top: 4px !important;
-            background-color: var(--app-primary);
+            background-color: #374460;
             color: #ffffff;
             border: none;
             border-radius: 6px;
@@ -184,14 +184,14 @@
         /* 📱 HEADER */
         .app-header {
             width: 100%;
-            background-color: #ffffff;
+            background-color: #dfe5eb;
             color: var(--app-primary);
             border-bottom: 1px solid var(--app-border);
             padding: 12px 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 8px rgba(228, 3, 3, 0.03);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -543,8 +543,8 @@
             margin-top: 4px;
         }
 
-        .status-pass { background-color: #dcfce7; color: #16a34a; border: 1px solid #22c55e; }
-        .status-fail { background-color: #fee2e2; color: #dc2626; border: 1px solid #ef4444; }
+        .status-pass { background-color: #031f7e; color: #a36616; border: 1px solid #22c55e; }
+        .status-fail { background-color: #f00000; color: #dc2626; border: 1px solid #ef4444; }
 
         .notes-section, .standard-note {
             background-color: var(--app-card-bg);
@@ -688,7 +688,7 @@
         }
 
         .sub-tab-btn {
-            background-color: transparent;
+            background-color: #b0c5dd;
             color: var(--text-dark);
             border: none;
             outline: none;
@@ -701,9 +701,9 @@
         }
 
         .sub-tab-btn.active {
-            color: var(--app-primary);
+            color: #04653a;
             border-bottom: 3px solid var(--app-primary);
-            background-color: var(--notify-bg);
+            background-color: #ffffff;
         }
 
         .nested-tab-bar {
@@ -760,12 +760,12 @@
         }
 
         .card {
-            background: #ffffff;
+            background: #f3f1f1;
             border: 1px solid var(--app-border);
             border-radius: 8px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 5px #562929;
             transition: transform 0.2s ease;
             display: flex;
             flex-direction: column;
@@ -775,7 +775,7 @@
         .card:hover {
             transform: translateY(-3px);
             border-color: var(--app-primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(209, 4, 4, 0.08);
         }
 
         .card h4 {
@@ -791,13 +791,12 @@
             display: inline-block;
             margin-top: 15px;
             padding: 10px 16px;
-            background-color: var(--app-primary);
+            background-color: #150953;
             color: #ffffff;
             text-decoration: none;
             border: none;
             border-radius: 5px;
-            font-size: 13px;
-            font-weight: 700;
+            font-weight: 1000;
             cursor: pointer;
             transition: background 0.2s ease;
             width: 100%;
@@ -1061,7 +1060,7 @@
   }
 
   .class-title {
-    color: #fef08a;
+    color: #6a616b;
     font-size: 20px;
     font-weight: bold;
     margin: 0 0 16px 0;
@@ -1224,13 +1223,15 @@
     <div class="license-card">
         
         <!-- ১. টাইটেলের ফন্ট সাইজ পিক্সেল/রেম এ ফিক্সড করা হয়েছে -->
-        <p style="margin-top: 4px; margin-bottom: 6px; color: #ffd104; font-size: 1.5rem !important; font-weight: bold; line-height: normal;">EEE MasterHub</p>
+        <p style="margin-top: 4px; margin-bottom: 6px; font-size: 2rem !important; font-weight: bold; line-height: normal;">
+  <span style="color: #ff04c0;">EEE </span><span style="color: #051ad6;">MasterHub</span>
+</p>
         
         <!-- Payment Request Section -->
         <div id="paymentRequestSection">
             
             <!-- ২. সাবটাইটেলের ফন্ট সাইজ ঠিক করা হয়েছে -->
-            <p style="margin-top: 4px; margin-bottom: 2px; color: #96f006; font-size: 0.8rem !important; font-weight: bold; line-height: normal;">💳পেমেন্ট সম্পূর্ণ করে রিকোয়েস্ট পাঠান।</p>
+            <p style="margin-top: 4px; margin-bottom: 2px; color: #8d0d04; font-size: 0.8rem !important; font-weight: bold; line-height: normal;">💳পেমেন্ট সম্পূর্ণ করে রিকোয়েস্ট পাঠান।</p>
             <p style="margin-top: 3px; margin-bottom: 2px; color: #000000; font-size: 0.8rem !important; font-weight: bold; line-height: normal;">ℹ️সহযোগিতার জন্য হোয়াটসঅ্যাপে মেসেজ দিন।</p>
             
             <!-- ৩. WhatsApp বাটন -->
@@ -1247,7 +1248,7 @@
             <div class="payment-info-box">
                 <p><span class="payment-method-badge bkash">bKash</span><span class="payment-method-badge nagad">Nagad</span><span class="payment-method-badge rocket">Rocket</span> </p>
                 <p> <strong>01729847380</strong> (Send Money)</p>
-                <p style="margin-top: 5px; color: #f88d02; font-size: 0.75rem;">(পেমেন্ট শেষে ফর্মটি পূরণ করলেই লাইসেন্স কী পৌঁছে যাবে আপনার ইমেইলে।)</p>
+                <p style="margin-top: 5px; color: #2f0147; font-size: 0.75rem;">(পেমেন্ট শেষে ফর্মটি পূরণ করলেই লাইসেন্স কী পৌঁছে যাবে আপনার ইমেইলে।)</p>
             </div>
 
             <form id="paymentForm" onsubmit="submitPaymentRequest(event)">
@@ -1264,7 +1265,7 @@
                 <input type="text" id="payTrxId" class="license-input" placeholder="TrxID (ট্রানজেকশন আইডি)" required>
                 <button type="submit" class="license-btn" id="paySubmitBtn">Confirm</button>
             </form>
-            <button class="toggle-btn" onclick="toggleAuthMode('login')" style="background: none; border: none; font-size: 12px; color: #87a0ed; cursor: pointer; text-decoration: underline; margin-top: 6px;">
+            <button class="toggle-btn" onclick="toggleAuthMode('login')" style="background: none; border: none; font-size: 12px; color: #5507e6; cursor: pointer; text-decoration: underline; margin-top: 6px;">
     লাইসেন্স কী আছে? থাকলে একটিভেট করুন।</button>
         </div>
         <!-- License Activation Section (Hidden by Default) -->
@@ -1300,16 +1301,14 @@
     <div id="dashboard_view">
         <!-- UNIQUE NOTIFICATION STYLE FOR COURSE PROMOTION -->
         <div class="notification-banner">
-            <div style="font-size: 0.8rem; color: var(--text-dark); font-weight: 600; line-height: 1.5;">
-                আপনি কি Electrical/Electronics/Power Engineer?<br>
-                তাহলে একটি গুরুত্বপূর্ণ সত্য জেনে নিন—<span style="color: var(--highlight-purple); font-weight: 700;">"ডিগ্রি আপনাকে পরিচয় দেয়, আর Practical Skill আপনাকে চাকরি এনে দেয়।"</span>
-            </div>
+            <div style="font-size: 0.8rem; color: var(--text-dark); font-weight: 600; line-height: 1.5;">ডিগ্রি আপনাকে পরিচয় দেয়, আর Practical Skill আপনাকে চাকরি এনে দেয়।<br>
+        </div>
             <div style="font-size: 0.95rem; color: var(--app-primary); font-weight: 800; margin-top: 6px;">
-                AutoCAD-Based Electrical Design Course Bundle (Zero to Advance)
+                Course:AutoCAD-Based Electrical Design Course Bundle (Zero to Advance)
             </div>
             <div style="font-size: 0.75rem; color: var(--highlight-amber); font-weight: 700; margin-top: 2px;">BNBC, NFPA, NIRAPON & RSC Standard অনুযায়ী</div>
-            <div style="font-size: 0.75rem; color: var(--text-dark); font-weight: 700; margin-top: 6px;">এই কোর্সে শিখানো হবে—</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-align: left; max-width: 600px; margin: 6px auto; line-height: 1.5;">
+            <div style="font-size: 0.85rem; color: #a3046e; font-weight: 700; margin-top: 6px;">এই কোর্সে শিখানো হবে—</div>
+            <div style="font-size: 0.75rem; color: #000000; font-weight: 600; text-align: left; max-width: 600px; margin: 6px auto; line-height: 1.5;">
                 1. Sub-Station Design (Code Based) 2. Lightning Protection System (LPS) Design & BOQ-BNBC 2020 ও NFPA 780 Standard 3. AutoCAD 2D & Isometric 4. Electrical SLD for RSC Audit 5. Electrical Safety Audit 6. BNBC 2020 Electrical Design Code Rules 7. Electrical Panel Board Design 8. Electrical Test Report Preparation 9. Checklist & Register Maintenance
             </div>
             <div style="font-size: 0.8rem; color: var(--app-primary); font-weight: 700; margin-top: 6px;">মনে রাখবেন— “আজকের স্কিলই আপনার আগামী দিনের পজিশন নির্ধারণ করবে।”</div>
@@ -1347,7 +1346,7 @@
    <!-- ==================== 0. COURSES MODULE VIEW ==================== -->
     <div id="courses_view" class="calc-view">
         <button class="btn-back" onclick="showDashboard()">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back
         </button>
 
         <div class="courses-container">
@@ -1963,7 +1962,7 @@
     <!-- ==================== 1. BBT VOLTAGE DROP CALCULATOR MODULE ==================== -->
     <div id="bbt_voltage_drop_calc" class="calc-view">
         <button class="btn-back" onclick="showDashboard()">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back
         </button>
 
         <div style="margin-bottom: 12px;">
@@ -2051,7 +2050,7 @@
     <!-- ==================== 2. CABLE VOLTAGE DROP CALCULATOR MODULE ==================== -->
     <div id="voltage_drop_calc" class="calc-view">
         <button class="btn-back" onclick="showDashboard()">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back
         </button>
 
         <div style="margin-bottom: 10px;">
@@ -2177,7 +2176,7 @@
     <!-- ==================== 3. SUBSTATION CALCULATOR MODULE ==================== -->
     <div id="substation_calc" class="calc-view">
         <button class="btn-back" onclick="showDashboard()">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Dashboard
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back
         </button>
 
         <div style="margin-bottom: 10px;">
@@ -2467,10 +2466,10 @@
         })
 .then(response => {
     if (response.ok) {
-        msgBox.style.color = '#ffffff';
+        msgBox.style.color = '#8d0d04';
         
         // 👉 টেক্সটের সাইজ ছোট করার লাইন (এখানে ১৩px দেয়া হয়েছে)
-        msgBox.style.fontSize = '10px'; 
+        msgBox.style.fontSize = '12px'; 
         
         msgBox.innerHTML = '✅ পেমেন্ট তথ্য সফলভাবে গৃহীতি হয়েছে! যাচাই শেষেই লাইসেন্স কী পৌঁছে যাবে আপনার ইমেইলে।';
         document.getElementById('paymentForm').reset();
@@ -2788,7 +2787,7 @@
             statusElem.innerText = "ACCEPTED";
             statusElem.style.color = "#4ade80";
         } else {
-            statusElem.innerText = "REJECTED";
+            statusElem.innerText = "NOT ACCEPTED";
             statusElem.style.color = "#f87171";
         }
     }
@@ -2970,7 +2969,7 @@ async function fetchLiveClasses() {
 
       let statusHeader = '';
       let isLive = false;
-      let btnText = '📹 Join Zoom Live Class Directly';
+    let btnText = '<span style="color: #F527B7; font-size: 20px; font-weight: bold;">📹 Join Now</span>';
 
       const status = (item.status || '').toUpperCase();
 
@@ -2988,8 +2987,8 @@ async function fetchLiveClasses() {
       card.innerHTML = `
         ${statusHeader}
         <div class="class-title">${item.title || 'AutoCAD Electrical Design'}</div>
-        <div class="info-text">⏰ তারিখ: ${item.date || ':28.08.26'}</div>
-        <div class="info-text">⏰ সময়: ${item.time || 'রাত ৯:০০ টা'}</div>
+        <div class="info-text">⏰ তারিখ: ${item.date || ':00.00.00'}</div>
+        <div class="info-text">⏰ সময়: ${item.time || 'রাত 00:00 টা'}</div>
         <div class="info-text">🔑 Passcode: <span class="passcode-text">123456</span></div>
         <button class="zoom-join-btn ${!isLive ? 'disabled' : ''}" 
                 ${!isLive ? 'disabled' : ''} 
