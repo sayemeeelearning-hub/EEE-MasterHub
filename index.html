@@ -1225,9 +1225,45 @@
         overflow: visible !important;
     }
 }
+@media print {
+    @page {
+        margin: 0; /* ব্রাউজারের ডিফল্ট হেডার ও ফুটার দূর করার জন্য */
+    }
+    body {
+        padding: 20px; /* পেজের টেক্সট যেন একদম মার্জিনের সাথে লেগে না যায় */
+    }
+}
+/* ১. সাধারণ স্ক্রিন ভিউতে সবসময় লুকিয়ে থাকবে (মেইন পেজে দেখাবে না) */
+.print-header-content {
+    display: none !important;
+}
+
+/* ২. শুধুমাত্র প্রিন্ট বা Save as PDF দেওয়ার সময় দৃশ্যমান হবে */
+@media print {
+    .print-header-content {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .title-line1 {
+        font-size: 18px; /* সাইজ ছোট-বড় করতে পারবেন */
+        font-weight: bold;
+        color: #003366;  /* কালার পরিবর্তন করতে পারবেন */
+    }
+
+    .title-line2 {
+        font-size: 13px; /* সাইজ ছোট-বড় করতে পারবেন */
+        color: #555555;  /* কালার পরিবর্তন করতে পারবেন */
+        margin-top: 4px;
+    }
+}
+
+
     </style>
 </head>
 <body>
+    
 
 <!-- 🔒 PAYMENT & LICENSE OVERLAY -->
 <div id="licenseOverlay">
@@ -1279,6 +1315,7 @@
             <button class="toggle-btn" onclick="toggleAuthMode('login')" style="background: none; border: none; font-size: 12px; color: #5507e6; cursor: pointer; text-decoration: underline; margin-top: 6px;">
     লাইসেন্স কী আছে? থাকলে একটিভেট করুন।</button>
         </div>
+        
         <!-- License Activation Section (Hidden by Default) -->
         <div id="licenseActivateSection" style="display: none;">
             <p>আপনার ইমেইলে প্রাপ্ত লাইসেন্স কী দিয়ে অ্যাপটি অ্যাক্টিভেট করুন।</p>
@@ -1293,6 +1330,12 @@
 
         <div id="licenseMsg" class="license-msg"></div>
     </div>
+</div>
+<!-- প্রিন্ট হেডার -->
+<div class="print-header-content">
+    <div class="title-line1">EEE MasterHub - Engineering Calculators & Courses</div>
+    <div class="title-line2">Developer By: SAYEM EEE LEARNING</div>
+    <div class="title-line2">WhatsApp:01714654448</div>
 </div>
 
 <!-- 📱 HEADER BAR -->
