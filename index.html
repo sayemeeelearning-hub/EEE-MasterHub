@@ -1214,6 +1214,17 @@
   background: #ccc;
   pointer-events: none;
 }
+@media print {
+    body {
+        visibility: visible;
+    }
+    .btn, .no-print {
+        display: none !important; /* প্রিন্টের সময় বাটন লুকিয়ে রাখার জন্য */
+    }
+    .table-wrapper {
+        overflow: visible !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -2428,6 +2439,12 @@
     var elt = document.getElementById('myTable'); 
     var wb = XLSX.utils.table_to_book(elt, { sheet: "Sheet 1" });
     return XLSX.writeFile(wb, 'Data_Export.xlsx');
+}
+function printReport() {
+    // পপ-আপ বা ইন-অ্যাপ রেস্ট্রিকশন এড়াতে অল্প ডিলে দেওয়া
+    setTimeout(function () {
+        window.print();
+    }, 500);
 }
 
     // 📩 পেমেন্ট রিকোয়েস্ট সাবমিট এবং ইমেইল পাঠানোর ফাংশন
