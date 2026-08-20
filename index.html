@@ -1420,7 +1420,7 @@
                             <div class="card">
                                <h4>Earthing System(CAD FILE)</h4>
                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
-                                <a href="https://drive.google.com/file/d/1qwtID8zOX0RpDmndTk6B8kJHx-8enMbS/view?usp=sharing" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               <a href="https://drive.google.com/uc?export=download&id=1qwtID8zOX0RpDmndTk6B8kJHx-8enMbS" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
                                </div>
                   
                         </div>
@@ -1486,7 +1486,7 @@
                             <div class="card">
                                <h4>AutoCAD ASSIGNMENTS(CAD FILE)</h4>
                                <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
-                                <a href="https://drive.google.com/file/d/1qwtID8zOX0RpDmndTk6Bview?usp=sharing" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               <a href="https://drive.google.com/uc?export=download&id=আপনার_নতুন_ফাইল_আইডি" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
                     
                             </div>
                         </div>
@@ -1509,12 +1509,12 @@
                             <div class="card">
                                 <h4>Electrical SLD Assignment-01</h4>
                                 <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
-                               <a href="https://drive.google.com/file/d/1ZgbDn7to9Zt6oflQ4-mcWpQ4XpYO1d_f/view?usp=sharing" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               <a href="https://drive.google.com/uc?export=download&id=1C7Q9wYSW-ubksyeOydyR0slDCJgTTSV-" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
                             </div>
                             <div class="card">
                                 <h4>Electrical SLD Assignment-02</h4>
                                 <p style="font-size: 13px; color: #64748b; margin-top: 5px;">Download or View Online</p>
-                               <a href="https://drive.google.com/file/d/1C7Q9wYSW-ubksyeOydyR0slDCJgTTSV-/view?usp=sharing" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
+                               <a href="https://drive.google.com/uc?export=download&id=1ZgbDn7to9Zt6oflQ4-mcWpQ4XpYO1d_f" target="_blank" class="btn-action" style="text-decoration: none; text-align: center; display: block;">Download File</a>
                             </div>
                         </div>
                     </div>
@@ -2423,6 +2423,12 @@
             actSec.style.display = 'none';
         }
     }
+    function exportToExcel() {
+    // 'myTable' হলো আপনার HTML টেবিলের ID
+    var elt = document.getElementById('myTable'); 
+    var wb = XLSX.utils.table_to_book(elt, { sheet: "Sheet 1" });
+    return XLSX.writeFile(wb, 'Data_Export.xlsx');
+}
 
     // 📩 পেমেন্ট রিকোয়েস্ট সাবমিট এবং ইমেইল পাঠানোর ফাংশন
     function submitPaymentRequest(e) {
@@ -3045,6 +3051,23 @@ async function promptEmailVerification(zoomUrl) {
 
 // নিশ্চিত করা যেন ফাংশনটি শুধু একবারই রান হয়
 document.addEventListener('DOMContentLoaded', fetchLiveClasses, { once: true });
+function exportToExcel(tableID, filename = '') {
+    // টেবিল ইলিমেন্ট খুঁজে নেওয়া
+    var table = document.getElementById(tableID);
+    if (!table) {
+        alert("টেবিল পাওয়া যায়নি!");
+        return;
+    }
+
+    // SheetJS ব্যবহার করে টেবিলকে ওয়ার্কশিটে রূপান্তর
+    var wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    
+    // ফাইল নেম সেট করা
+    var fileName = (filename ? filename : 'Export_Data') + '.xlsx';
+
+    // ফাইল ডাউনলোড করানো
+    XLSX.writeFile(wb, fileName);
+}
 </script>
 </body>
 </html>
